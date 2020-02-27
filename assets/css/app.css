@@ -1,3 +1,37 @@
 /* This file is for your main application css. */
 
 @import "./phoenix.css";
+
+body {
+  background-color: black;
+  color: #5be65b;
+}
+
+input {
+  background-color: #1a1a1a;
+  color: #00AB00;
+}
+
+a {
+  color: #dffcff;
+}
+
+p {
+}
+
+#price-views {
+  margin-bottom: 5em;
+}
+
+.threshold-forms {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+
+.note {
+  font-size: 0.7em;
+}
+
+.footer {
+  font-size: 0.7em;
+}
