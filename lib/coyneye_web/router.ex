@@ -16,7 +16,7 @@ defmodule CoyneyeWeb.Router do
   scope "/", CoyneyeWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", PricesController, :index
     get "/prices", PricesController, :index
   end
 
