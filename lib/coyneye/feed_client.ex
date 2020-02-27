@@ -1,5 +1,6 @@
 defmodule Coyneye.FeedClient do
   use WebSockex
+  alias Coyneye.{Repo, Price, Currency}
 
   @url "wss://ws.kraken.com/"
 
@@ -20,7 +21,7 @@ defmodule Coyneye.FeedClient do
   end
 
   def handle_disconnect(_conn, state) do
-    IO.puts "disconnected"
+    IO.puts "Disconnected"
 
     {:ok, state}
   end
@@ -52,11 +53,33 @@ defmodule Coyneye.FeedClient do
   # ]
   def handle_msg([_channel_id, prices, "trade", _currency_pair], state) do
     latest_trade = Enum.max_by(prices, &(Enum.fetch(&1, 2)))
-    {:ok, price} = Enum.fetch(latest_trade, 0)
+    {:ok, price_string} = Enum.fetch(latest_trade, 0)
 
-    IO.puts price
+    {price, _ } = Float.parse(price_string)
+
+    persist_price(price)
 
     {:ok, state}
   end
 
+  def persist_price(amount) do
+    price = %Price{}
+    currency = currency_record("ETH/USD")
+
+    changeset = Price.changeset(price, %{amount: amount, currency_id: currency.id})
+
+    Repo.insert(changeset)
+  end
+
+  def currency_record(name) do
+    {:ok, currency} = %Currency{}
+      |> Currency.changeset(%{name: name})
+      |> Repo.insert(on_conflict: :nothing)
+
+    if is_nil(currency.id) do
+      Currency |> Repo.get_by!(name: name)
+    else
+      currency
+    end
+  end
 end

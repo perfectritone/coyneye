@@ -9,7 +9,7 @@ defmodule Coyneye.Application do
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      Coyneye.Repo,
+      {Coyneye.Repo, []},
       # Start the endpoint when the application starts
       CoyneyeWeb.Endpoint,
       {Coyneye.FeedClient, ["ETH/USD"]},

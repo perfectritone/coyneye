@@ -7,6 +7,12 @@
 # General application configuration
 use Mix.Config
 
+config :coyneye, Coyneye.Repo,
+  database: "coyneye_repo",
+  username: "rails",
+  password: "rails",
+  hostname: "127.0.0.1"
+
 config :coyneye,
   ecto_repos: [Coyneye.Repo]
 
