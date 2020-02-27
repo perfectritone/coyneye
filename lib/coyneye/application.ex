@@ -12,7 +12,7 @@ defmodule Coyneye.Application do
       Coyneye.Repo,
       # Start the endpoint when the application starts
       CoyneyeWeb.Endpoint,
-      {Coyneye.FeedClient, 225},
+      {Coyneye.FeedClient, ["ETH/USD"]},
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
