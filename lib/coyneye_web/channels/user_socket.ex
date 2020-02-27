@@ -1,6 +1,9 @@
 defmodule CoyneyeWeb.UserSocket do
   use Phoenix.Socket
 
+  transport :websocket, Phoenix.Transports.WebSocket,
+    timeout: 45_000
+
   ## Channels
   # channel "room:*", CoyneyeWeb.RoomChannel
 
