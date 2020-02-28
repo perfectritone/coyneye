@@ -1,16 +1,11 @@
 defmodule Coyneye.PushoverService do
-  require Mint.HTTP
+  require HTTPoison
+
+  @url "https://api.pushover.net/1/messages.json"
+  @headers [{"Content-Type", "application/json"}]
 
   def notify(message) do
-    {:ok, conn} = Mint.HTTP.connect(:https, "api.pushover.net", 443)
-
-    {:ok, _conn, _request_ref} = Mint.HTTP.request(
-      conn,
-      "POST",
-      "/1/messages.json",
-      [],
-      body(message)
-    )
+    HTTPoison.post(@url, body(message), @headers)
   end
 
   def body(message) do
@@ -31,10 +26,10 @@ defmodule Coyneye.PushoverService do
   end
 
   defp sound(message) do
-    case message do
-      ~r/above/ -> "pushover"
-      ~r/below/ -> "falling"
-      _ -> "gamelan"
+    cond do
+      String.match?(message, ~r/above/) -> "pushover"
+      String.match?(message, ~r/below/) -> "falling"
+      true -> "gamelan"
     end
   end
 end
