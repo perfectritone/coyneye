@@ -35,3 +35,4 @@ npm-debug.log
 
 *.beam
 /config/*.secret.exs
+.env

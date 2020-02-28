@@ -45,6 +45,8 @@ defmodule Coyneye.MixProject do
       {:plug_cowboy, "~> 2.0"},
       {:websockex, "~> 0.4.2"},
       {:poison, "~> 4.0"},
+      {:mint, "~> 1.0.0"},
+      {:castore, ">= 0.0.0"},
     ]
   end
 

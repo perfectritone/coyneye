@@ -8,7 +8,7 @@ defmodule CoyneyeWeb.MinThresholdController do
     |> MinThreshold.changeset(params)
     |> Repo.insert()
     |> case do
-      {:ok, threshold} ->
+      {:ok, _threshold} ->
         conn
         |> redirect(to: CoyneyeWeb.Router.Helpers.prices_path(conn, :index))
     end

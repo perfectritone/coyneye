@@ -64,7 +64,7 @@ defmodule Coyneye.FeedClient do
     broadcast_price(price)
 
     update_thresholds(price)
-    |> send_threshold_notifications
+    |> send_threshold_notifications(price)
 
     {:ok, state}
   end
@@ -83,20 +83,40 @@ defmodule Coyneye.FeedClient do
   end
 
   def update_thresholds(price) do
+    cond do
+      met_max_threshold?(price) ->
+        "above"
+      met_min_threshold?(price) ->
+        "below"
+      true ->
+        nil
+    end
+  end
+
+  defp met_max_threshold?(price) do
     max_threshold = last_max_threshold_amount()
     if max_threshold && price > max_threshold.amount do
       max_threshold = Ecto.Changeset.change max_threshold, met: true
       Repo.update max_threshold
-    end
 
+      "above"
+    end
+  end
+
+  defp met_min_threshold?(price) do
     min_threshold = last_min_threshold_amount()
     if min_threshold && price < min_threshold.amount do
       min_threshold = Ecto.Changeset.change min_threshold, met: true
       Repo.update min_threshold
+
+      "below"
     end
   end
 
-  def send_threshold_notifications(_) do
+  def send_threshold_notifications(direction, price) when direction do
+    message = "USDT/ETH is #{direction} threshold (#{price})"
+
+    Coyneye.PushoverService.notify(message)
   end
 
   def currency_record(name) do
