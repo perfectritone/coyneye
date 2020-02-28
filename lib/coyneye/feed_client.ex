@@ -95,7 +95,7 @@ defmodule Coyneye.FeedClient do
 
   defp met_max_threshold?(price) do
     max_threshold = last_max_threshold_amount()
-    if max_threshold && price > max_threshold.amount do
+    if max_threshold && price >= max_threshold.amount do
       max_threshold = Ecto.Changeset.change max_threshold, met: true
       Repo.update max_threshold
 
@@ -105,7 +105,7 @@ defmodule Coyneye.FeedClient do
 
   defp met_min_threshold?(price) do
     min_threshold = last_min_threshold_amount()
-    if min_threshold && price < min_threshold.amount do
+    if min_threshold && price <= min_threshold.amount do
       min_threshold = Ecto.Changeset.change min_threshold, met: true
       Repo.update min_threshold
 
