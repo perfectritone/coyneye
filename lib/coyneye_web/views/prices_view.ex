@@ -1,8 +1,15 @@
 defmodule CoyneyeWeb.PricesView do
   use CoyneyeWeb, :view
 
-  def render("index.html", _assigns) do
-    price =  Coyneye.Price |> Ecto.Query.last |> Coyneye.Repo.one
-    price.amount
+  def title do
+    "(#{amount()}) Coyneye"
+  end
+
+  def amount do
+    price().amount
+  end
+
+  defp price do
+    Coyneye.Price |> Ecto.Query.last |> Coyneye.Repo.one
   end
 end

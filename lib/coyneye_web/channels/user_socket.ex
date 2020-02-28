@@ -2,7 +2,7 @@ defmodule CoyneyeWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", CoyneyeWeb.RoomChannel
+  channel "price:*", CoyneyeWeb.PriceChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After

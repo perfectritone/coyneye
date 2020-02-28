@@ -58,6 +58,7 @@ defmodule Coyneye.FeedClient do
     {price, _ } = Float.parse(price_string)
 
     persist_price(price)
+    broadcast_price(price)
 
     {:ok, state}
   end
@@ -69,6 +70,10 @@ defmodule Coyneye.FeedClient do
     changeset = Price.changeset(price, %{amount: amount, currency_id: currency.id})
 
     Repo.insert(changeset)
+  end
+
+  def broadcast_price(amount) do
+    CoyneyeWeb.Endpoint.broadcast!("price:eth/usd", "new_price", %{amount: amount})
   end
 
   def currency_record(name) do
