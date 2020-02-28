@@ -60,7 +60,7 @@ let priceContainer = document.querySelector("#price")
 
 channel.on("new_price", payload => {
   let price = payload.amount
-  priceContainer.innerText = price
+  priceContainer.innerText = `ETH/USD: ${price}`
   document.title = `(${price}) Coyneye`
 })
 

@@ -1,6 +1,6 @@
 <div id='price-views' align="center">
   <div id="price">
-    <%= amount() %>
+    ETH/USD: <%= amount() %>
   </div>
 
   <div class='threshold-forms'>

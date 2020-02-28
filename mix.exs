@@ -46,6 +46,7 @@ defmodule Coyneye.MixProject do
       {:websockex, "~> 0.4.2"},
       {:poison, "~> 4.0"},
       {:httpoison, "~> 1.6.1"},
+      {:credo, "~> 1.2", only: [:dev, :test], runtime: false}
     ]
   end
 
