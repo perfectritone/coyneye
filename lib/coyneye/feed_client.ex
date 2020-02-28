@@ -1,6 +1,9 @@
 defmodule Coyneye.FeedClient do
   use WebSockex
-  alias Coyneye.{Repo, Price, Currency}
+
+  alias Coyneye.{Repo, Price, Currency, MaxThreshold, MinThreshold}
+  require Ecto.Query
+  alias Ecto.Query
 
   @url "wss://ws.kraken.com/"
 
@@ -60,6 +63,9 @@ defmodule Coyneye.FeedClient do
     persist_price(price)
     broadcast_price(price)
 
+    update_thresholds(price)
+    |> send_threshold_notifications
+
     {:ok, state}
   end
 
@@ -76,6 +82,23 @@ defmodule Coyneye.FeedClient do
     CoyneyeWeb.Endpoint.broadcast!("price:eth/usd", "new_price", %{amount: amount})
   end
 
+  def update_thresholds(price) do
+    max_threshold = last_max_threshold_amount()
+    if max_threshold && price > max_threshold.amount do
+      max_threshold = Ecto.Changeset.change max_threshold, met: true
+      Repo.update max_threshold
+    end
+
+    min_threshold = last_min_threshold_amount()
+    if min_threshold && price < min_threshold.amount do
+      min_threshold = Ecto.Changeset.change min_threshold, met: true
+      Repo.update min_threshold
+    end
+  end
+
+  def send_threshold_notifications(_) do
+  end
+
   def currency_record(name) do
     {:ok, currency} = %Currency{}
       |> Currency.changeset(%{name: name})
@@ -85,6 +108,24 @@ defmodule Coyneye.FeedClient do
       Currency |> Repo.get_by!(name: name)
     else
       currency
+    end
+  end
+
+  def last_max_threshold_amount do
+    Query.from(MaxThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
+    |> Repo.one
+    |> case do
+      (%MaxThreshold{} = record) -> record
+      nil -> nil
+    end
+  end
+
+  defp last_min_threshold_amount do
+    Query.from(MinThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
+    |> Repo.one
+    |> case do
+      (%MinThreshold{} = record) -> record
+      nil -> nil
     end
   end
 end

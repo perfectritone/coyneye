@@ -1,6 +1,11 @@
 defmodule CoyneyeWeb.PricesView do
   use CoyneyeWeb, :view
 
+  require Ecto.Query
+  require Coyneye.Repo
+  alias Coyneye.Repo
+  alias Coyneye.{MaxThreshold, MinThreshold}
+
   def title do
     "(#{amount()}) Coyneye"
   end
@@ -18,7 +23,8 @@ defmodule CoyneyeWeb.PricesView do
   end
 
   def max_threshold do
-    Coyneye.MaxThreshold |> Ecto.Query.last |> Coyneye.Repo.one
+    Ecto.Query.from(MaxThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
+    |> Repo.one
     |> case do
       (%Coyneye.MaxThreshold{} = record) ->
         {:ok, threshold_amount } = Map.fetch(record, :amount)
@@ -29,7 +35,8 @@ defmodule CoyneyeWeb.PricesView do
   end
 
   def min_threshold do
-    Coyneye.MinThreshold |> Ecto.Query.last |> Coyneye.Repo.one
+    Ecto.Query.from(MinThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
+    |> Repo.one
     |> case do
       (%Coyneye.MinThreshold{} = record) ->
         {:ok, threshold_amount } = Map.fetch(record, :amount)
