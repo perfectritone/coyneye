@@ -27,8 +27,8 @@ defmodule Coyneye.PushoverService do
 
   defp sound(message) do
     cond do
-      String.match?(message, ~r/above/) -> "pushover"
-      String.match?(message, ~r/below/) -> "falling"
+      Regex.match?(~r/above/, message) -> "pushover"
+      Regex.match?(~r/below/, message) -> "falling"
       true -> "gamelan"
     end
   end
