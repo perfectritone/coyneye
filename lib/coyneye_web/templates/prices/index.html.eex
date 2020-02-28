@@ -17,7 +17,7 @@
     <% end %>
   </div>
 
-  <p class='note'>
+  <p class='note' hidden='true'>
     Set thresholds to automatically update based on the custom price increment provided
   </p>
 </div>
