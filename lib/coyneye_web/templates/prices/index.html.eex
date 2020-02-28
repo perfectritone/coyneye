@@ -1,3 +1,23 @@
-<div id="price" align="center">
-  <%= amount() %>
+<div id='price-views' align="center">
+  <div id="price">
+    <%= amount() %>
+  </div>
+
+  <div class='threshold-forms'>
+    <%= form_for max_threshold_changeset(), Routes.max_threshold_path(@conn, :create), fn f -> %>
+      <%= text_input f, :amount %>
+      <%= submit "↑" %>
+      <%= "(#{max_threshold()})" %>
+    <% end %>
+
+    <%= form_for min_threshold_changeset(), Routes.min_threshold_path(@conn, :create), fn f -> %>
+      <%= text_input f, :amount %>
+      <%= submit "↓" %>
+      <%= "(#{min_threshold()})" %>
+    <% end %>
+  </div>
+
+  <p class='note'>
+    Set thresholds to automatically update based on the custom price increment provided
+  </p>
 </div>
