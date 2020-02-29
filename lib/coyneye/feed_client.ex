@@ -68,11 +68,15 @@ defmodule Coyneye.FeedClient do
 
   def persist_price(amount) do
     price = %Price{}
-    currency = currency_record("ETH/USD")
 
-    changeset = Price.changeset(price, %{amount: amount, currency_id: currency.id})
-
-    Repo.insert(changeset)
+    cond do
+      (price = last_price()) ->
+        price = Ecto.Changeset.change price, amount: amount
+        Repo.update price
+      true ->
+        changeset = Price.changeset(price, %{amount: amount, currency_id: eth_usd_currency().id})
+        Repo.insert(changeset)
+    end
   end
 
   def broadcast_price(amount) do
@@ -116,6 +120,8 @@ defmodule Coyneye.FeedClient do
     Coyneye.PushoverService.notify(message)
   end
 
+  def eth_usd_currency, do: currency_record("ETH/USD")
+
   def currency_record(name) do
     {:ok, currency} = %Currency{}
       |> Currency.changeset(%{name: name})
@@ -128,6 +134,16 @@ defmodule Coyneye.FeedClient do
     end
   end
 
+  def last_price do
+    currency_id = eth_usd_currency().id
+
+    Query.from(Price, where: [currency_id: ^currency_id], order_by: [desc: :id], limit: 1)
+    |> Repo.one
+    |> case do
+      (%Price{} = record) -> record
+      nil -> nil
+    end
+  end
   def last_max_threshold_amount do
     Query.from(MaxThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
     |> Repo.one
