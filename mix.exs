@@ -41,12 +41,13 @@ defmodule Coyneye.MixProject do
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
+      {:jason, "~> 1.1"},
       {:plug_cowboy, "~> 2.0"},
       {:websockex, "~> 0.4.2"},
       {:poison, "~> 4.0"},
       {:httpoison, "~> 1.6.1"},
-      {:credo, "~> 1.2", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.2", only: [:dev, :test], runtime: false},
+      {:sentry, "~> 7.0"}
     ]
   end
 
