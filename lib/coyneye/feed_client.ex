@@ -23,7 +23,7 @@ defmodule Coyneye.FeedClient do
   end
 
   def handle_disconnect(_conn, state) do
-    {:ok, state}
+    {:error, state}
   end
 
   def subscription_frame(currency_pairs) do
