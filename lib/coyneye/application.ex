@@ -13,6 +13,7 @@ defmodule Coyneye.Application do
       # Start the endpoint when the application starts
       CoyneyeWeb.Endpoint,
       {Coyneye.FeedClient, ["ETH/USD"]},
+      {Phoenix.PubSub, [name: Coyneye.PubSub, adapter: Phoenix.PubSub.PG2]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

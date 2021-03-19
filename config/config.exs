@@ -15,7 +15,7 @@ config :coyneye, CoyneyeWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "XEXLqqLKbdBOl/fcFLDndpMqkiddWp2kA5Yp9A3ReNP9YNrmZZ9vih/hfw8QEJQt",
   render_errors: [view: CoyneyeWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Coyneye.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: Coyneye.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,
