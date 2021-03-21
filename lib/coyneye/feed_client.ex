@@ -58,7 +58,7 @@ defmodule Coyneye.FeedClient do
     {price, _ } = Float.parse(price_string)
 
     persist_price(price)
-    broadcast_price(price)
+    # broadcast_price(price)
 
     update_thresholds(price)
     |> send_threshold_notifications(price)
