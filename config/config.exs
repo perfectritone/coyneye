@@ -13,9 +13,10 @@ config :coyneye,
 # Configures the endpoint
 config :coyneye, CoyneyeWeb.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "XEXLqqLKbdBOl/fcFLDndpMqkiddWp2kA5Yp9A3ReNP9YNrmZZ9vih/hfw8QEJQt",
-  render_errors: [view: CoyneyeWeb.ErrorView, accepts: ~w(html json)],
-  pubsub_server: Coyneye.PubSub
+  secret_key_base: "g2I+aqMKiZHVjz8oifBe20dIKsxrhIzorOVbzqkFTL0FCtAafRkuyjxroG4yQsWE",
+  render_errors: [view: CoyneyeWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: Coyneye.PubSub,
+  live_view: [signing_salt: "GkWevJAg"]
 
 # Configures Elixir's Logger
 config :logger, :console,

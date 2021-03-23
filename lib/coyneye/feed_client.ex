@@ -26,6 +26,11 @@ defmodule Coyneye.FeedClient do
     {:error, state}
   end
 
+  def terminate(reason, state) do
+    IO.puts("\nSocket Terminating:\n#{inspect reason}\n\n#{inspect state}\n")
+    exit(:normal)
+  end
+
   def subscription_frame(currency_pairs) do
     subscription_msg = %{
       event: "subscribe",
@@ -44,6 +49,7 @@ defmodule Coyneye.FeedClient do
 
   def handle_msg(%{"event" => "heartbeat"}, state), do: {:ok, state}
   def handle_msg(%{"event" => "subscriptionStatus"}, state), do: {:ok, state}
+  def handle_msg(%{"event" => "systemStatus"}, state), do: {:ok, state}
 
   # [
   #   181,

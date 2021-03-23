@@ -6,14 +6,18 @@ defmodule Coyneye.Application do
   use Application
 
   def start(_type, _args) do
-    # List all child processes to be supervised
     children = [
       # Start the Ecto repository
-      {Coyneye.Repo, []},
-      # Start the endpoint when the application starts
+      Coyneye.Repo,
+      # Start the Telemetry supervisor
+      CoyneyeWeb.Telemetry,
+      # Start the PubSub system
+      {Phoenix.PubSub, name: Coyneye.PubSub},
+      # Start the Endpoint (http/https)
       CoyneyeWeb.Endpoint,
-      {Coyneye.FeedClient, ["ETH/USD"]},
-      {Phoenix.PubSub, [name: Coyneye.PubSub, adapter: Phoenix.PubSub.PG2]}
+      # Start a worker by calling: Coyneye.Worker.start_link(arg)
+      # {Coyneye.Worker, arg}
+      {Coyneye.FeedClient, ["ETH/USD"]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
