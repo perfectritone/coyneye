@@ -23,6 +23,7 @@ defmodule Coyneye.FeedClient do
   end
 
   def handle_disconnect(_conn, state) do
+    IO.puts('disconnected')
     {:reconnect, state}
   end
 
@@ -115,6 +116,7 @@ defmodule Coyneye.FeedClient do
     end
   end
 
+  def send_threshold_notifications(nil, _price), do: {:ok}
   def send_threshold_notifications(direction, price) when is_binary(direction) do
     message = "USDT/ETH is #{direction} threshold (#{price})"
 
