@@ -7,11 +7,7 @@ defmodule CoyneyeWeb.PricesView do
   alias Coyneye.{MaxThreshold, MinThreshold}
 
   def title do
-    "(#{amount()}) Coyneye"
-  end
-
-  def amount do
-    price().amount
+    "Coyneye"
   end
 
   def max_threshold_changeset do
@@ -30,6 +26,7 @@ defmodule CoyneyeWeb.PricesView do
         {:ok, threshold_amount } = Map.fetch(record, :amount)
 
         threshold_amount
+        |> format_float_to_price
       nil -> nil
     end
   end
@@ -42,11 +39,12 @@ defmodule CoyneyeWeb.PricesView do
         {:ok, threshold_amount } = Map.fetch(record, :amount)
 
         threshold_amount
+        |> format_float_to_price
       nil -> nil
     end
   end
 
-  defp price do
-    Coyneye.Price |> Ecto.Query.last |> Coyneye.Repo.one
+  defp format_float_to_price(float) do
+    :erlang.float_to_binary(float, [decimals: 2])
   end
 end
