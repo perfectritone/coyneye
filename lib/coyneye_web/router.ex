@@ -22,6 +22,8 @@ defmodule CoyneyeWeb.Router do
     get "/prices", PricesController, :index
     post "/max_thresholds", MaxThresholdController, :create
     post "/min_thresholds", MinThresholdController, :create
+
+    live "/recent_price", PriceLive
   end
 
   # Other scopes may use custom stacks.

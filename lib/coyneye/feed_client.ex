@@ -60,7 +60,7 @@ defmodule Coyneye.FeedClient do
     {price, _ } = Float.parse(price_string)
 
     persist_price(price)
-    # broadcast_price(price)
+    broadcast_price(price)
 
     update_thresholds(price)
     |> send_threshold_notifications(price)
@@ -82,7 +82,7 @@ defmodule Coyneye.FeedClient do
   end
 
   def broadcast_price(amount) do
-    CoyneyeWeb.Endpoint.broadcast!("price:eth/usd", "new_price", %{amount: amount})
+    Coyneye.Prices.notify_subscribers({:ok, amount})
   end
 
   def update_thresholds(price) do
