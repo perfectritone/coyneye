@@ -2,6 +2,7 @@ defmodule Coyneye.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
+  @default_currency_pair "ETH/USD"
 
   use Application
 
@@ -17,7 +18,7 @@ defmodule Coyneye.Application do
       CoyneyeWeb.Endpoint,
       # Start a worker by calling: Coyneye.Worker.start_link(arg)
       # {Coyneye.Worker, arg}
-      {Coyneye.FeedClient, ["ETH/USD"]}
+      {Coyneye.FeedClient, [@default_currency_pair]}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
