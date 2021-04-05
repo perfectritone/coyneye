@@ -16,7 +16,7 @@ config :coyneye, CoyneyeWeb.Endpoint,
   secret_key_base: "g2I+aqMKiZHVjz8oifBe20dIKsxrhIzorOVbzqkFTL0FCtAafRkuyjxroG4yQsWE",
   render_errors: [view: CoyneyeWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Coyneye.PubSub,
-  live_view: [signing_salt: "GkWevJAg"]
+  live_view: [signing_salt: "FBt4j1G2sSzhFl8EvlJPzk478dX1OIGL"]
 
 # Configures Elixir's Logger
 config :logger, :console,

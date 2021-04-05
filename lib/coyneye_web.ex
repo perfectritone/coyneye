@@ -24,6 +24,8 @@ defmodule CoyneyeWeb do
       import Plug.Conn
       import CoyneyeWeb.Gettext
       alias CoyneyeWeb.Router.Helpers, as: Routes
+
+      import Phoenix.LiveView.Controller
     end
   end
 
@@ -39,6 +41,8 @@ defmodule CoyneyeWeb do
 
       # Include shared imports and aliases for views
       unquote(view_helpers())
+
+      import Phoenix.LiveView.Helpers
     end
   end
 
@@ -48,6 +52,7 @@ defmodule CoyneyeWeb do
 
       import Plug.Conn
       import Phoenix.Controller
+      import Phoenix.LiveView.Router
     end
   end
 

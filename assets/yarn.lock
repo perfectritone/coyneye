@@ -4278,6 +4278,9 @@ performance-now@^2.1.0:
 "phoenix_html@file:../deps/phoenix_html":
   version "2.14.3"
 
+"phoenix_live_view@file:../deps/phoenix_live_view":
+  version "0.15.4"
+
 picomatch@^2.0.4, picomatch@^2.2.1:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.2.2.tgz#21f333e9b6b8eaff02468f5146ea406d345f4dad"

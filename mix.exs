@@ -49,7 +49,9 @@ defmodule Coyneye.MixProject do
       {:poison, "~> 4.0"},
       {:httpoison, "~> 1.6.1"},
       {:credo, "~> 1.2", only: [:dev, :test], runtime: false},
-      {:sentry, "~> 7.0"}
+      {:sentry, "~> 7.0"},
+      {:phoenix_live_view, "~> 0.15.4"},
+      {:floki, ">= 0.27.0", only: :test}
     ]
   end
 
