@@ -131,7 +131,7 @@ defmodule Coyneye.FeedClient do
   def eth_usd_currency_record, do: Application.eth_usd_currency_pair() |> currency_record
 
   def currency_record(name) do
-    DatabaseCache.get_or_put(:db_cache, fn () -> currency_record_query(name) end)
+    DatabaseCache.get(:db_cache, fn () -> currency_record_query(name) end)
   end
 
   def currency_record_query(name) do

@@ -12,16 +12,16 @@ defmodule Coyneye.DatabaseCache do
   end
 
   def get(key), do: GenServer.call(CoyneyeDatabaseCache, {:get, key})
-
-  def put(key, data), do: GenServer.cast(CoyneyeDatabaseCache, {:put, key, data})
-
-  def get_or_put(key, function) do
+  def get(key, default_function) do
     unless get(key) do
-      put(key, function.())
+      put(key, default_function.())
     end
 
     get(key)
   end
+
+  def put(key, data), do: GenServer.cast(CoyneyeDatabaseCache, {:put, key, data})
+
 
   def delete(key), do: GenServer.cast(CoyneyeDatabaseCache, {:delete, key})
 
