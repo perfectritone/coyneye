@@ -1,4 +1,4 @@
-defmodule Coyneye.MinThreshold do
+defmodule Coyneye.Model.MinThreshold do
   use Ecto.Schema
   import Ecto.Changeset
 

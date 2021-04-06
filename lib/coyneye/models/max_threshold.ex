@@ -1,4 +1,4 @@
-defmodule Coyneye.MaxThreshold do
+defmodule Coyneye.Model.MaxThreshold do
   use Ecto.Schema
   import Ecto.Changeset
 

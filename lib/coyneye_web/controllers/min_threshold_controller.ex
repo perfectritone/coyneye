@@ -1,6 +1,6 @@
 defmodule CoyneyeWeb.MinThresholdController do
   use CoyneyeWeb, :controller
-  alias Coyneye.MinThreshold
+  alias Coyneye.Model.MinThreshold
   alias Coyneye.Repo
 
   def create(conn, %{"min_threshold" => params}) do

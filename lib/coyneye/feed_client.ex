@@ -1,7 +1,7 @@
 defmodule Coyneye.FeedClient do
   use WebSockex
 
-  alias Coyneye.{Application, Repo, Price, Model.Currency, DatabaseCache, MaxThreshold, MinThreshold}
+  alias Coyneye.{Application, Repo, Price, Currency, DatabaseCache, Model.MaxThreshold, Model.MinThreshold}
   require Ecto.Query
   alias Ecto.Query
 
@@ -131,11 +131,7 @@ defmodule Coyneye.FeedClient do
   def eth_usd_currency_record, do: Application.eth_usd_currency_pair() |> currency_record
 
   def currency_record(name) do
-    DatabaseCache.get(:db_cache, fn () -> currency_record_query(name) end)
-  end
-
-  def currency_record_query(name) do
-    Currency |> Repo.get_by!(name: name)
+    DatabaseCache.get(:db_cache, fn () -> Currency.record(name) end)
   end
 
   def last_price do
