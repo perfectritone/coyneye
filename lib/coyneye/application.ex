@@ -18,7 +18,8 @@ defmodule Coyneye.Application do
       CoyneyeWeb.Endpoint,
       # Start a worker by calling: Coyneye.Worker.start_link(arg)
       # {Coyneye.Worker, arg}
-      {Coyneye.FeedClient, [@eth_usd_currency_pair]}
+      {Coyneye.FeedClient, [@eth_usd_currency_pair]},
+      Coyneye.DatabaseCache,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
