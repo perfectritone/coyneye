@@ -1,6 +1,7 @@
 defmodule Coyneye.Prices do
   require Ecto.Query
-  alias Coyneye.{Price, PubSub, Repo}
+  alias Coyneye.{PubSub, Repo}
+  alias Coyneye.Model.Price
 
   @moduledoc """
   Prices
