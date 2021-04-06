@@ -8,7 +8,7 @@ defmodule Coyneye.Price do
 
   schema "prices" do
     field :amount, :float
-    belongs_to :currency, Coyneye.Currency
+    belongs_to :currency, Coyneye.Model.Currency
 
     timestamps()
   end

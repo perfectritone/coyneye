@@ -1,4 +1,4 @@
-defmodule Coyneye.Currency do
+defmodule Coyneye.Model.Currency do
   use Ecto.Schema
   import Ecto.Changeset
 

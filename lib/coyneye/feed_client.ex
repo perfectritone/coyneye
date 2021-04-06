@@ -1,7 +1,7 @@
 defmodule Coyneye.FeedClient do
   use WebSockex
 
-  alias Coyneye.{Application, Repo, Price, Currency, DatabaseCache, MaxThreshold, MinThreshold}
+  alias Coyneye.{Application, Repo, Price, Model.Currency, DatabaseCache, MaxThreshold, MinThreshold}
   require Ecto.Query
   alias Ecto.Query
 
