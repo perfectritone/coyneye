@@ -1,12 +1,9 @@
 defmodule CoyneyeWeb.MaxThresholdController do
   use CoyneyeWeb, :controller
-  alias Coyneye.Model.MaxThreshold
-  alias Coyneye.Repo
+  alias Coyneye.Threshold
 
   def create(conn, %{"max_threshold" => params}) do
-    %MaxThreshold{}
-    |> MaxThreshold.changeset(params)
-    |> Repo.insert()
+    Threshold.create_max(params)
     |> case do
       {:ok, _threshold} ->
         conn

@@ -1,12 +1,9 @@
 defmodule CoyneyeWeb.MinThresholdController do
   use CoyneyeWeb, :controller
-  alias Coyneye.Model.MinThreshold
-  alias Coyneye.Repo
+  alias Coyneye.Threshold
 
   def create(conn, %{"min_threshold" => params}) do
-    %MinThreshold{}
-    |> MinThreshold.changeset(params)
-    |> Repo.insert()
+    Threshold.create_min(params)
     |> case do
       {:ok, _threshold} ->
         conn
