@@ -1,5 +1,6 @@
 defmodule Coyneye.Prices do
-  import Ecto.Query
+  require Ecto.Query
+  alias Coyneye.{Price, PubSub, Repo}
 
   @moduledoc """
   Prices
@@ -8,14 +9,14 @@ defmodule Coyneye.Prices do
   @topic inspect(__MODULE__)
 
   def last do
-    Coyneye.Price |> Ecto.Query.last |> Coyneye.Repo.one
+    Price |> Ecto.Query.last |> Repo.one
   end
 
   def subscribe do
-    Phoenix.PubSub.subscribe(Coyneye.PubSub, @topic)
+    Phoenix.PubSub.subscribe(PubSub, @topic)
   end
 
   def notify_subscribers({:ok, amount}) do
-    Phoenix.PubSub.broadcast(Coyneye.PubSub, @topic, {__MODULE__, amount})
+    Phoenix.PubSub.broadcast(PubSub, @topic, {__MODULE__, amount})
   end
 end
