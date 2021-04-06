@@ -1,6 +1,10 @@
 defmodule CoyneyeWeb.PriceLive do
   use Phoenix.LiveView
 
+  @moduledoc """
+  LiveView for Prices
+  """
+
   def render(assigns) do
     ~L"""
     ETH/USD: <%= @price %>

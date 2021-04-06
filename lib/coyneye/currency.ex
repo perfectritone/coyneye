@@ -2,6 +2,10 @@ defmodule Coyneye.Currency do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @moduledoc """
+  Schema for `currencies` table
+  """
+
   schema "currencies" do
     field :name, :string
 

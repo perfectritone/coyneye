@@ -5,6 +5,10 @@ defmodule Coyneye.FeedClient do
   require Ecto.Query
   alias Ecto.Query
 
+  @moduledoc """
+  Websocket client for Kraken prices
+  """
+
   @url "wss://ws.kraken.com/"
 
   def start_link(currency_pairs) do

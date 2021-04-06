@@ -2,6 +2,10 @@ defmodule Coyneye.Price do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @moduledoc """
+  Schema for `prices` table
+  """
+
   schema "prices" do
     field :amount, :float
     belongs_to :currency, Coyneye.Currency

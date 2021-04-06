@@ -1,6 +1,10 @@
 defmodule Coyneye.PushoverService do
   require HTTPoison
 
+  @moduledoc """
+  Push notifications to the Pushover service
+  """
+
   @url "https://api.pushover.net/1/messages.json"
   @headers [{"Content-Type", "application/json"}]
 

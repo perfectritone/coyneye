@@ -2,6 +2,10 @@ defmodule Coyneye.MinThreshold do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @moduledoc """
+  Schema for `min_thresholds` table
+  """
+
   schema "min_thresholds" do
     field :amount, :float
     field :met, :boolean, default: false

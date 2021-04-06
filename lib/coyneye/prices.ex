@@ -1,6 +1,10 @@
 defmodule Coyneye.Prices do
   import Ecto.Query
 
+  @moduledoc """
+  Prices
+  """
+
   @topic inspect(__MODULE__)
 
   def last do
