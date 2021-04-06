@@ -6,7 +6,7 @@ defmodule Coyneye.DatabaseCache do
   end
 
   def init(state) do
-    :ets.new(:currency_cache, [:set, :public, :named_table])
+    :ets.new(:db_cache, [:set, :public, :named_table])
 
     {:ok, state}
   end
@@ -15,13 +15,21 @@ defmodule Coyneye.DatabaseCache do
 
   def put(key, data), do: GenServer.cast(CoyneyeDatabaseCache, {:put, key, data})
 
+  def get_or_put(key, function) do
+    unless get(key) do
+      put(key, function.())
+    end
+
+    get(key)
+  end
+
   def delete(key), do: GenServer.cast(CoyneyeDatabaseCache, {:delete, key})
 
   # GenServer API
   #
   def handle_call({:get, key}, _from, state) do
     reply =
-      case :ets.lookup(:currency_cache, key) do
+      case :ets.lookup(:db_cache, key) do
         [] -> nil
         [{_key, currency}] -> currency
       end
@@ -30,13 +38,13 @@ defmodule Coyneye.DatabaseCache do
   end
 
   def handle_cast({:put, key, data}, state) do
-    :ets.insert(:currency_cache, {key, data})
+    :ets.insert(:db_cache, {key, data})
 
     {:noreply, state}
   end
 
   def handle_cast({:delete, key}, state) do
-    :ets.delete(:currency_cache, key)
+    :ets.delete(:db_cache, key)
 
     {:noreply, state}
   end

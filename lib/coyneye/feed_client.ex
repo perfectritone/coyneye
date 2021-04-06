@@ -131,16 +131,11 @@ defmodule Coyneye.FeedClient do
   def eth_usd_currency_record, do: Application.eth_usd_currency_pair() |> currency_record
 
   def currency_record(name) do
-    record = DatabaseCache.get(:eth_usd_currency)
+    DatabaseCache.get_or_put(:db_cache, fn () -> currency_record_query(name) end)
+  end
 
-    if record do
-      record
-    else
-      record = Currency |> Repo.get_by!(name: name)
-      DatabaseCache.put(:eth_usd_currency, record)
-    end
-
-    record
+  def currency_record_query(name) do
+    Currency |> Repo.get_by!(name: name)
   end
 
   def last_price do
