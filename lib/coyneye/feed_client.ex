@@ -1,7 +1,7 @@
 defmodule Coyneye.FeedClient do
   use WebSockex
 
-  alias Coyneye.{Repo, Price, Currency, MaxThreshold, MinThreshold}
+  alias Coyneye.{Application, Repo, Price, Currency, MaxThreshold, MinThreshold}
   require Ecto.Query
   alias Ecto.Query
 
@@ -24,6 +24,7 @@ defmodule Coyneye.FeedClient do
 
   def handle_disconnect(_conn, state) do
     IO.puts('disconnected')
+
     {:reconnect, state}
   end
 
@@ -63,22 +64,16 @@ defmodule Coyneye.FeedClient do
     broadcast_price(price)
 
     update_thresholds(price)
-    |> send_threshold_notifications(price)
+      |> send_threshold_notifications(price)
+
 
     {:ok, state}
   end
 
   def persist_price(amount) do
-    price = %Price{}
-
-    cond do
-      (price = last_price()) ->
-        price = Ecto.Changeset.change price, amount: amount
-        Repo.update price
-      true ->
-        changeset = Price.changeset(price, %{amount: amount, currency_id: eth_usd_currency().id})
-        Repo.insert(changeset)
-    end
+    last_price()
+      |> Ecto.Changeset.change(amount: amount)
+      |> Repo.update
   end
 
   def broadcast_price(amount) do
@@ -123,22 +118,14 @@ defmodule Coyneye.FeedClient do
     Coyneye.PushoverService.notify(message)
   end
 
-  def eth_usd_currency, do: currency_record("ETH/USD")
+  def eth_usd_currency_record, do: Application.eth_usd_currency_pair |> currency_record
 
   def currency_record(name) do
-    {:ok, currency} = %Currency{}
-      |> Currency.changeset(%{name: name})
-      |> Repo.insert(on_conflict: :nothing)
-
-    if is_nil(currency.id) do
-      Currency |> Repo.get_by!(name: name)
-    else
-      currency
-    end
+    Currency |> Repo.get_by!(name: name)
   end
 
   def last_price do
-    currency_id = eth_usd_currency().id
+    currency_id = eth_usd_currency_record().id
 
     Query.from(Price, where: [currency_id: ^currency_id], order_by: [desc: :id], limit: 1)
     |> Repo.one

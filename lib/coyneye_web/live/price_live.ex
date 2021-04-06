@@ -8,7 +8,6 @@ defmodule CoyneyeWeb.PriceLive do
   end
 
   def mount(_params, _session, socket) do
-    IO.puts("just mounted")
     if connected?(socket), do: Coyneye.Prices.subscribe()
 
     {:ok, fetch(socket)}
@@ -19,7 +18,8 @@ defmodule CoyneyeWeb.PriceLive do
   end
 
   defp fetch(socket) do
-    price = Coyneye.Prices.last.amount
-    assign(socket, :price, price)
+    assign(socket, :price, last_price)
   end
+
+  defp last_price, do: Coyneye.Prices.last.amount
 end
