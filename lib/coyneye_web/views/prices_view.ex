@@ -20,31 +20,35 @@ defmodule CoyneyeWeb.PricesView do
 
   def max_threshold do
     Ecto.Query.from(MaxThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
-    |> Repo.one
+    |> Repo.one()
     |> case do
-      (%Coyneye.MaxThreshold{} = record) ->
-        {:ok, threshold_amount } = Map.fetch(record, :amount)
+      %Coyneye.MaxThreshold{} = record ->
+        {:ok, threshold_amount} = Map.fetch(record, :amount)
 
         threshold_amount
         |> format_float_to_price
-      nil -> nil
+
+      nil ->
+        nil
     end
   end
 
   def min_threshold do
     Ecto.Query.from(MinThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
-    |> Repo.one
+    |> Repo.one()
     |> case do
-      (%Coyneye.MinThreshold{} = record) ->
-        {:ok, threshold_amount } = Map.fetch(record, :amount)
+      %Coyneye.MinThreshold{} = record ->
+        {:ok, threshold_amount} = Map.fetch(record, :amount)
 
         threshold_amount
         |> format_float_to_price
-      nil -> nil
+
+      nil ->
+        nil
     end
   end
 
   defp format_float_to_price(float) do
-    :erlang.float_to_binary(float, [decimals: 2])
+    :erlang.float_to_binary(float, decimals: 2)
   end
 end

@@ -9,7 +9,7 @@ defmodule Coyneye.Prices do
   @topic inspect(__MODULE__)
 
   def last do
-    Price |> Ecto.Query.last |> Repo.one
+    Price |> Ecto.Query.last() |> Repo.one()
   end
 
   def subscribe do

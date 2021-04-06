@@ -33,13 +33,15 @@ defmodule Coyneye.FeedClient do
   end
 
   def subscription_frame(currency_pairs) do
-    subscription_msg = %{
-      event: "subscribe",
-      pair: currency_pairs,
-      subscription: %{
-        name: "trade"
+    subscription_msg =
+      %{
+        event: "subscribe",
+        pair: currency_pairs,
+        subscription: %{
+          name: "trade"
+        }
       }
-    } |> Poison.encode!()
+      |> Poison.encode!()
 
     {:text, subscription_msg}
   end
@@ -59,25 +61,24 @@ defmodule Coyneye.FeedClient do
   #   "ETH/USD"
   # ]
   def handle_msg([_channel_id, prices, "trade", _currency_pair], state) do
-    latest_trade = Enum.max_by(prices, &(Enum.fetch(&1, 2)))
+    latest_trade = Enum.max_by(prices, &Enum.fetch(&1, 2))
     {:ok, price_string} = Enum.fetch(latest_trade, 0)
 
-    {price, _ } = Float.parse(price_string)
+    {price, _} = Float.parse(price_string)
 
     persist_price(price)
     broadcast_price(price)
 
     update_thresholds(price)
-      |> send_threshold_notifications(price)
-
+    |> send_threshold_notifications(price)
 
     {:ok, state}
   end
 
   def persist_price(amount) do
     last_price()
-      |> Ecto.Changeset.change(amount: amount)
-      |> Repo.update
+    |> Ecto.Changeset.change(amount: amount)
+    |> Repo.update()
   end
 
   def broadcast_price(amount) do
@@ -88,8 +89,10 @@ defmodule Coyneye.FeedClient do
     cond do
       met_max_threshold?(price) ->
         "above"
+
       met_min_threshold?(price) ->
         "below"
+
       true ->
         nil
     end
@@ -100,7 +103,7 @@ defmodule Coyneye.FeedClient do
 
     if max_threshold && price >= max_threshold.amount do
       Ecto.Changeset.change(max_threshold, met: true)
-      |> Repo.update
+      |> Repo.update()
 
       "above"
     end
@@ -111,20 +114,21 @@ defmodule Coyneye.FeedClient do
 
     if min_threshold && price <= min_threshold.amount do
       Ecto.Changeset.change(min_threshold, met: true)
-      |> Repo.update
+      |> Repo.update()
 
       "below"
     end
   end
 
   def send_threshold_notifications(nil, _price), do: {:ok}
+
   def send_threshold_notifications(direction, price) when is_binary(direction) do
     message = "USDT/ETH is #{direction} threshold (#{price})"
 
     Coyneye.PushoverService.notify(message)
   end
 
-  def eth_usd_currency_record, do: Application.eth_usd_currency_pair |> currency_record
+  def eth_usd_currency_record, do: Application.eth_usd_currency_pair() |> currency_record
 
   def currency_record(name) do
     Currency |> Repo.get_by!(name: name)
@@ -134,27 +138,27 @@ defmodule Coyneye.FeedClient do
     currency_id = eth_usd_currency_record().id
 
     Query.from(Price, where: [currency_id: ^currency_id], order_by: [desc: :id], limit: 1)
-    |> Repo.one
+    |> Repo.one()
     |> case do
-      (%Price{} = record) -> record
+      %Price{} = record -> record
       nil -> nil
     end
   end
 
   defp last_max_threshold_amount do
     Query.from(MaxThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
-    |> Repo.one
+    |> Repo.one()
     |> case do
-      (%MaxThreshold{} = record) -> record
+      %MaxThreshold{} = record -> record
       nil -> nil
     end
   end
 
   defp last_min_threshold_amount do
     Query.from(MinThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
-    |> Repo.one
+    |> Repo.one()
     |> case do
-      (%MinThreshold{} = record) -> record
+      %MinThreshold{} = record -> record
       nil -> nil
     end
   end

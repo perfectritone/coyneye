@@ -17,7 +17,7 @@ defmodule Coyneye.PushoverService do
       token: token(),
       user: user(),
       message: message,
-      sound: sound(message),
+      sound: sound(message)
     })
   end
 
