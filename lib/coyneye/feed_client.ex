@@ -66,7 +66,7 @@ defmodule Coyneye.FeedClient do
 
     Price.persist_price(price)
     Price.notify_subscribers({:ok, price})
-    ThresholdNotifier.call_me(price)
+    ThresholdNotifier.call(price)
 
     {:ok, state}
   end
