@@ -1,6 +1,8 @@
 defmodule CoyneyeWeb.PriceLive do
   use Phoenix.LiveView
 
+  alias Coyneye.Price
+
   @moduledoc """
   LiveView for Prices
   """
@@ -12,12 +14,12 @@ defmodule CoyneyeWeb.PriceLive do
   end
 
   def mount(_params, _session, socket) do
-    if connected?(socket), do: Coyneye.Prices.subscribe()
+    if connected?(socket), do: Price.subscribe()
 
     {:ok, fetch(socket)}
   end
 
-  def handle_info({Coyneye.Prices, _price}, socket) do
+  def handle_info({Price, _price}, socket) do
     {:noreply, fetch(socket)}
   end
 
@@ -25,5 +27,5 @@ defmodule CoyneyeWeb.PriceLive do
     assign(socket, :price, last_price())
   end
 
-  defp last_price, do: Coyneye.Prices.last().amount
+  defp last_price, do: Price.last().amount
 end

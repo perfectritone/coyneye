@@ -1,4 +1,4 @@
-defmodule Coyneye.Prices do
+defmodule Coyneye.Price do
   require Ecto.Query
   alias Coyneye.{PubSub, Repo}
   alias Coyneye.Model.Price
