@@ -78,13 +78,15 @@ defmodule Coyneye.FeedClient do
   end
 
   def send_threshold_notifications(%{}, _price), do: {:ok}
+
   def send_threshold_notifications(%{max_threshold_met: true}, price) do
     notification_message("above", price)
-    |> Coyneye.PushoverService.notify
+    |> Coyneye.PushoverService.notify()
   end
+
   def send_threshold_notifications(%{min_threshold_met: true}, price) do
     notification_message("below", price)
-    |> Coyneye.PushoverService.notify
+    |> Coyneye.PushoverService.notify()
   end
 
   defp notification_message(direction, price) do
@@ -94,6 +96,6 @@ defmodule Coyneye.FeedClient do
   def eth_usd_currency_record, do: Application.eth_usd_currency_pair() |> currency_record
 
   def currency_record(name) do
-    DatabaseCache.get(:db_cache, fn () -> Currency.record(name) end)
+    DatabaseCache.get(:db_cache, fn -> Currency.record(name) end)
   end
 end

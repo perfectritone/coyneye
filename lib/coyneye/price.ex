@@ -14,9 +14,10 @@ defmodule Coyneye.Price do
   end
 
   def persist_price(amount) do
-    result = last()
-    |> Ecto.Changeset.change(amount: amount)
-    |> Repo.update()
+    result =
+      last()
+      |> Ecto.Changeset.change(amount: amount)
+      |> Repo.update()
 
     DatabaseCache.put(:last_price, elem(result, 1))
 
