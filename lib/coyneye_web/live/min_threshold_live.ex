@@ -1,7 +1,7 @@
 defmodule CoyneyeWeb.MinThresholdLive do
   use Phoenix.LiveView
 
-  alias Coyneye.{MinThreshold, Threshold}
+  alias Coyneye.{MinThreshold, PriceFormatter, Threshold}
 
   @moduledoc """
   LiveView for MinThresholds
@@ -9,7 +9,7 @@ defmodule CoyneyeWeb.MinThresholdLive do
 
   def render(assigns) do
     ~L"""
-    (<%= @min_threshold %>)
+    (<%= PriceFormatter.call(@min_threshold) %>)
     """
   end
 

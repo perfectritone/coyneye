@@ -1,7 +1,7 @@
 defmodule CoyneyeWeb.PriceLive do
   use Phoenix.LiveView
 
-  alias Coyneye.Price
+  alias Coyneye.{Price, PriceFormatter}
 
   @moduledoc """
   LiveView for Prices
@@ -9,7 +9,7 @@ defmodule CoyneyeWeb.PriceLive do
 
   def render(assigns) do
     ~L"""
-    ETH/USD: <%= @price %>
+    ETH/USD: <%= PriceFormatter.call(@price) %>
     """
   end
 

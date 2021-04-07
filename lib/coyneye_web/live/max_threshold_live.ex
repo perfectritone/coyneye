@@ -1,7 +1,7 @@
 defmodule CoyneyeWeb.MaxThresholdLive do
   use Phoenix.LiveView
 
-  alias Coyneye.{MaxThreshold, Threshold}
+  alias Coyneye.{MaxThreshold, PriceFormatter, Threshold}
 
   @moduledoc """
   LiveView for MaxThresholds
@@ -9,7 +9,7 @@ defmodule CoyneyeWeb.MaxThresholdLive do
 
   def render(assigns) do
     ~L"""
-    (<%= @max_threshold %>)
+    (<%= PriceFormatter.call(@max_threshold) %>)
     """
   end
 
