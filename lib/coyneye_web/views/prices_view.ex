@@ -25,7 +25,7 @@ defmodule CoyneyeWeb.PricesView do
     |> format_float_to_price
   end
 
-  defp format_float_to_price(nil), do: nil
+  defp format_float_to_price(-1), do: nil
   defp format_float_to_price(float) do
     :erlang.float_to_binary(float, decimals: 2)
   end
