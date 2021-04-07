@@ -4,7 +4,7 @@ defmodule Coyneye.Price do
   alias Coyneye.Model.Price
 
   @moduledoc """
-  Prices
+  Price helper
   """
 
   @topic inspect(__MODULE__)

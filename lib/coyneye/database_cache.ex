@@ -1,6 +1,10 @@
 defmodule Coyneye.DatabaseCache do
   use GenServer
 
+  @moduledoc """
+  Cache common database queries
+  """
+
   def start_link(_default) do
     GenServer.start_link(__MODULE__, %{}, name: CoyneyeDatabaseCache)
   end

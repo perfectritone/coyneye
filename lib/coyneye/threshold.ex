@@ -5,6 +5,10 @@ defmodule Coyneye.Threshold do
   alias Coyneye.Model.{MaxThreshold, MinThreshold}
   alias Coyneye.{DatabaseCache, Repo}
 
+  @moduledoc """
+  Threshold helper
+  """
+
   def minimum_unmet_maximum do
     Query.from(MaxThreshold, where: [met: false], order_by: [asc: :amount], limit: 1)
     |> Repo.one()
