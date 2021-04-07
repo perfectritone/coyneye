@@ -1,7 +1,7 @@
 defmodule Coyneye.FeedClient do
   use WebSockex
 
-  alias Coyneye.{Application, Currency, DatabaseCache, Price, Threshold}
+  alias Coyneye.{Price, ThresholdNotifier}
 
   @moduledoc """
   Websocket client for Kraken prices
@@ -65,37 +65,9 @@ defmodule Coyneye.FeedClient do
     {price, _} = Float.parse(price_string)
 
     Price.persist_price(price)
-    broadcast_price(price)
-
-    Threshold.check_thresholds(price)
-    |> send_threshold_notifications(price)
+    Price.notify_subscribers({:ok, price})
+    ThresholdNotifier.call_me(price)
 
     {:ok, state}
-  end
-
-  def broadcast_price(amount) do
-    Price.notify_subscribers({:ok, amount})
-  end
-
-  def send_threshold_notifications(%{}, _price), do: {:ok}
-
-  def send_threshold_notifications(%{max_threshold_met: true}, price) do
-    notification_message("above", price)
-    |> Coyneye.PushoverService.notify()
-  end
-
-  def send_threshold_notifications(%{min_threshold_met: true}, price) do
-    notification_message("below", price)
-    |> Coyneye.PushoverService.notify()
-  end
-
-  defp notification_message(direction, price) do
-    "USDT/ETH is #{direction} threshold (#{price})"
-  end
-
-  def eth_usd_currency_record, do: Application.eth_usd_currency_pair() |> currency_record
-
-  def currency_record(name) do
-    DatabaseCache.get(:db_cache, fn -> Currency.record(name) end)
   end
 end
