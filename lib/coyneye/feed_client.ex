@@ -1,7 +1,7 @@
 defmodule Coyneye.FeedClient do
   use WebSockex
 
-  alias Coyneye.{Application, Currency, DatabaseCache, Price, Repo, Threshold}
+  alias Coyneye.{Application, Currency, DatabaseCache, Price, Threshold}
 
   @moduledoc """
   Websocket client for Kraken prices
@@ -64,19 +64,13 @@ defmodule Coyneye.FeedClient do
 
     {price, _} = Float.parse(price_string)
 
-    persist_price(price)
+    Price.persist_price(price)
     broadcast_price(price)
 
     Threshold.check_thresholds(price)
     |> send_threshold_notifications(price)
 
     {:ok, state}
-  end
-
-  def persist_price(amount) do
-    Price.last
-    |> Ecto.Changeset.change(amount: amount)
-    |> Repo.update()
   end
 
   def broadcast_price(amount) do

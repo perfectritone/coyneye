@@ -1,6 +1,6 @@
 defmodule Coyneye.Price do
   require Ecto.Query
-  alias Coyneye.{PubSub, Repo}
+  alias Coyneye.{DatabaseCache, PubSub, Repo}
   alias Coyneye.Model.Price
 
   @moduledoc """
@@ -10,7 +10,17 @@ defmodule Coyneye.Price do
   @topic inspect(__MODULE__)
 
   def last do
-    Price |> Ecto.Query.last() |> Repo.one()
+    DatabaseCache.get(:last_price, &last_query/0)
+  end
+
+  def persist_price(amount) do
+    result = last()
+    |> Ecto.Changeset.change(amount: amount)
+    |> Repo.update()
+
+    DatabaseCache.put(:last_price, elem(result, 1))
+
+    result
   end
 
   def subscribe do
@@ -19,5 +29,9 @@ defmodule Coyneye.Price do
 
   def notify_subscribers({:ok, amount}) do
     Phoenix.PubSub.broadcast(PubSub, @topic, {__MODULE__, amount})
+  end
+
+  defp last_query do
+    Price |> Ecto.Query.last() |> Repo.one()
   end
 end
