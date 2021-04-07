@@ -1,7 +1,7 @@
 defmodule Coyneye.FeedClient do
   use WebSockex
 
-  alias Coyneye.{Application, Repo, Model.Price, Currency, DatabaseCache, Model.MaxThreshold, Model.MinThreshold}
+  alias Coyneye.{Application, Repo, Model.Price, Currency, DatabaseCache, Threshold}
   require Ecto.Query
   alias Ecto.Query
 
@@ -69,7 +69,7 @@ defmodule Coyneye.FeedClient do
     persist_price(price)
     broadcast_price(price)
 
-    update_thresholds(price)
+    Threshold.check_thresholds(price)
     |> send_threshold_notifications(price)
 
     {:ok, state}
@@ -85,47 +85,18 @@ defmodule Coyneye.FeedClient do
     Coyneye.Prices.notify_subscribers({:ok, amount})
   end
 
-  def update_thresholds(price) do
-    cond do
-      met_max_threshold?(price) ->
-        "above"
-
-      met_min_threshold?(price) ->
-        "below"
-
-      true ->
-        nil
-    end
+  def send_threshold_notifications(%{}, _price), do: {:ok}
+  def send_threshold_notifications(%{max_threshold_met: true}, price) do
+    notification_message("above", price)
+    |> Coyneye.PushoverService.notify
+  end
+  def send_threshold_notifications(%{min_threshold_met: true}, price) do
+    notification_message("below", price)
+    |> Coyneye.PushoverService.notify
   end
 
-  defp met_max_threshold?(price) do
-    max_threshold = last_max_threshold_amount()
-
-    if max_threshold && price >= max_threshold.amount do
-      Ecto.Changeset.change(max_threshold, met: true)
-      |> Repo.update()
-
-      "above"
-    end
-  end
-
-  defp met_min_threshold?(price) do
-    min_threshold = last_min_threshold_amount()
-
-    if min_threshold && price <= min_threshold.amount do
-      Ecto.Changeset.change(min_threshold, met: true)
-      |> Repo.update()
-
-      "below"
-    end
-  end
-
-  def send_threshold_notifications(nil, _price), do: {:ok}
-
-  def send_threshold_notifications(direction, price) when is_binary(direction) do
-    message = "USDT/ETH is #{direction} threshold (#{price})"
-
-    Coyneye.PushoverService.notify(message)
+  defp notification_message(direction, price) do
+    "USDT/ETH is #{direction} threshold (#{price})"
   end
 
   def eth_usd_currency_record, do: Application.eth_usd_currency_pair() |> currency_record
@@ -141,24 +112,6 @@ defmodule Coyneye.FeedClient do
     |> Repo.one()
     |> case do
       %Price{} = record -> record
-      nil -> nil
-    end
-  end
-
-  defp last_max_threshold_amount do
-    Query.from(MaxThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
-    |> Repo.one()
-    |> case do
-      %MaxThreshold{} = record -> record
-      nil -> nil
-    end
-  end
-
-  defp last_min_threshold_amount do
-    Query.from(MinThreshold, where: [met: false], order_by: [desc: :id], limit: 1)
-    |> Repo.one()
-    |> case do
-      %MinThreshold{} = record -> record
       nil -> nil
     end
   end

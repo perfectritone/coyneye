@@ -1,17 +1,18 @@
 defmodule Coyneye.Threshold do
-  require Ecto.Query
+  require Ecto.{Changeset, Query}
 
+  alias Ecto.{Changeset, Query}
   alias Coyneye.Model.{MaxThreshold, MinThreshold}
   alias Coyneye.Repo
 
   def minimum_unmet_maximum do
-    Ecto.Query.from(MaxThreshold, where: [met: false], order_by: [asc: :amount], limit: 1)
+    Query.from(MaxThreshold, where: [met: false], order_by: [asc: :amount], limit: 1)
     |> Repo.one()
     |> threshold_amount
   end
 
   def maximum_unmet_minimum do
-    Ecto.Query.from(MinThreshold, where: [met: false], order_by: [desc: :amount], limit: 1)
+    Query.from(MinThreshold, where: [met: false], order_by: [desc: :amount], limit: 1)
     |> Repo.one()
     |> threshold_amount
   end
@@ -34,6 +35,43 @@ defmodule Coyneye.Threshold do
     %MinThreshold{}
     |> MinThreshold.changeset(%{"amount" => amount})
     |> Repo.insert()
+  end
+
+  def check_thresholds(price) do
+    {max_threshold_records_updated, _} = unmet_max_thresholds_exceeded(price)
+    |> Coyneye.Repo.update_all(
+      set: [
+        met: true,
+      ],
+    )
+
+    {min_threshold_records_updated, _} = unmet_min_thresholds_exceeded(price)
+    |> Coyneye.Repo.update_all(
+      set: [
+        met: true,
+      ],
+    )
+
+    %{
+      max_threshold_met: max_threshold_records_updated != 0,
+      min_threshold_met: min_threshold_records_updated != 0,
+    }
+  end
+
+  def unmet_max_thresholds do
+    Query.from(MaxThreshold, where: [met: false])
+  end
+
+  def unmet_min_thresholds do
+    Query.from(MinThreshold, where: [met: false])
+  end
+
+  def unmet_max_thresholds_exceeded(price) do
+    Query.from mt in unmet_max_thresholds, where: mt.amount <= ^price
+  end
+
+  def unmet_min_thresholds_exceeded(price) do
+    Query.from mt in unmet_min_thresholds, where: mt.amount >= ^price
   end
 
   defp threshold_amount(nil), do: nil
