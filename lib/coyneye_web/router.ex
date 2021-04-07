@@ -24,6 +24,8 @@ defmodule CoyneyeWeb.Router do
     post "/min_thresholds", MinThresholdController, :create
 
     live "/recent_price", PriceLive
+    live "/minimum_unmet_maximum_threshold", MaxThresholdLive
+    live "/maximum_unmet_minimum_threshold", MinThresholdLive
   end
 
   # Other scopes may use custom stacks.

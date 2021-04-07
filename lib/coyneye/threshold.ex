@@ -35,7 +35,7 @@ defmodule Coyneye.Threshold do
       |> MaxThreshold.changeset(%{"amount" => amount})
       |> Repo.insert()
 
-    DatabaseCache.put(:minimum_unmet_maximum_threshold, minimum_unmet_maximum())
+    new_max()
 
     result
   end
@@ -46,7 +46,7 @@ defmodule Coyneye.Threshold do
       |> MinThreshold.changeset(%{"amount" => amount})
       |> Repo.insert()
 
-    DatabaseCache.put(:maximum_unmet_minimum_threshold, maximum_unmet_minimum())
+    new_min()
 
     result
   end
@@ -118,14 +118,24 @@ defmodule Coyneye.Threshold do
     threshold_amount
   end
 
-  defp update_cache(%{}), do: nil
-
   defp update_cache(%{max_threshold_met: true}) do
-    DatabaseCache.put(:minimum_unmet_maximum_threshold, minimum_unmet_maximum())
+    new_max()
   end
 
   defp update_cache(%{min_threshold_met: true}) do
+    new_min()
+  end
+
+  defp update_cache(%{}), do: nil
+
+  defp new_max do
+    DatabaseCache.put(:minimum_unmet_maximum_threshold, minimum_unmet_maximum())
+    Coyneye.MaxThreshold.notify_subscribers({:ok, cached_max()})
+  end
+
+  defp new_min do
     DatabaseCache.put(:maximum_unmet_minimum_threshold, maximum_unmet_minimum())
+    Coyneye.MinThreshold.notify_subscribers({:ok, cached_min()})
   end
 
   def cached_max do
