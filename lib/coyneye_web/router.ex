@@ -20,6 +20,7 @@ defmodule CoyneyeWeb.Router do
 
     get "/", PricesController, :index
     get "/prices", PricesController, :index
+    get "/prices/:currency_pair", PricesController, :show
     post "/max_thresholds", MaxThresholdController, :create
     post "/min_thresholds", MinThresholdController, :create
 

@@ -13,6 +13,10 @@ defmodule Coyneye.Price do
     DatabaseCache.get(:last_price, &last_query/0)
   end
 
+  def last_amount do
+    DatabaseCache.get(:last_price, &last_query/0).amount
+  end
+
   def persist_price(amount) do
     result =
       last()

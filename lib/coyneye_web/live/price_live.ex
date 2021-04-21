@@ -27,5 +27,5 @@ defmodule CoyneyeWeb.PriceLive do
     assign(socket, :price, last_price())
   end
 
-  defp last_price, do: Price.last().amount
+  defp last_price, do: Price.last_amount()
 end
