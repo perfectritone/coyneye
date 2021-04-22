@@ -21,13 +21,15 @@ defmodule Coyneye.FeedClient do
   end
 
   def handle_connect(_conn, state) do
+    IO.puts('reconnected')
+
     {:ok, state}
   end
 
-  def handle_disconnect(_conn, state) do
+  def handle_disconnect(conn, state) do
     IO.puts('disconnected')
 
-    {:reconnect, state}
+    {:reconnect, conn, state}
   end
 
   def subscription_frame(currency_pairs) do
