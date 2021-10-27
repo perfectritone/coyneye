@@ -14,7 +14,6 @@ defmodule CoyneyeWeb.MaxThresholdLive do
   end
 
   def mount(_params, _session, socket) do
-    IO.puts("max connected")
     if connected?(socket), do: MaxThreshold.subscribe()
 
     {:ok, fetch(socket)}
@@ -28,5 +27,5 @@ defmodule CoyneyeWeb.MaxThresholdLive do
     assign(socket, :max_threshold, amount())
   end
 
-  defp amount, do: Threshold.cached_max
+  defp amount, do: Threshold.cached_max_amount
 end

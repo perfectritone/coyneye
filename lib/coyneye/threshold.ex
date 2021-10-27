@@ -12,13 +12,23 @@ defmodule Coyneye.Threshold do
   def minimum_unmet_maximum do
     Query.from(MaxThreshold, where: [met: false], order_by: [asc: :amount], limit: 1)
     |> Repo.one()
-    |> threshold_amount
+    |> threshold
   end
 
   def maximum_unmet_minimum do
     Query.from(MinThreshold, where: [met: false], order_by: [desc: :amount], limit: 1)
     |> Repo.one()
-    |> threshold_amount
+    |> threshold
+  end
+
+  def minimum_unmet_maximum_amount do
+    minimum_unmet_maximum()
+    |> Map.fetch("amount")
+  end
+
+  def maximum_unmet_minimum_amount do
+    maximum_unmet_minimum()
+    |> Map.fetch("amount")
   end
 
   def new_max_threshold do
@@ -29,10 +39,18 @@ defmodule Coyneye.Threshold do
     MinThreshold.changeset(%MinThreshold{}, %{})
   end
 
-  def create_max(%{"amount" => amount}) do
+  def create_max_met(%{"amount" => amount}) do
+    create_max(%{"amount" => amount, "condition" => :met})
+  end
+
+  def create_max_exceeded(%{"amount" => amount}) do
+    create_max(%{"amount" => amount, "condition" => :exceeded})
+  end
+
+  def create_max(%{"amount" => amount, "condition" => condition}) do
     result =
       %MaxThreshold{}
-      |> MaxThreshold.changeset(%{"amount" => amount})
+      |> MaxThreshold.changeset(%{"amount" => amount, "condition" => condition})
       |> Repo.insert()
 
     new_max()
@@ -40,10 +58,18 @@ defmodule Coyneye.Threshold do
     result
   end
 
-  def create_min(%{"amount" => amount}) do
+  def create_min_met(%{"amount" => amount}) do
+    create_min(%{"amount" => amount, "condition" => :met})
+  end
+
+  def create_min_exceeded(%{"amount" => amount}) do
+    create_min(%{"amount" => amount, "condition" => :exceeded})
+  end
+
+  def create_min(%{"amount" => amount, "condition" => condition}) do
     result =
       %MinThreshold{}
-      |> MinThreshold.changeset(%{"amount" => amount})
+      |> MinThreshold.changeset(%{"amount" => amount, "condition" => condition})
       |> Repo.insert()
 
     new_min()
@@ -52,31 +78,9 @@ defmodule Coyneye.Threshold do
   end
 
   def check_thresholds(price) do
-    max_threshold_records_updated =
-      if 0 < cached_max() and cached_max() <= price do
-        unmet_max_thresholds_exceeded(price)
-        |> Coyneye.Repo.update_all(
-          set: [
-            met: true
-          ]
-        )
-        |> elem(0)
-      else
-        0
-      end
+    max_threshold_records_updated = check_max_threshold(price, cached_max())
 
-    min_threshold_records_updated =
-      if cached_min() >= price do
-        unmet_min_thresholds_exceeded(price)
-        |> Coyneye.Repo.update_all(
-          set: [
-            met: true
-          ]
-        )
-        |> elem(0)
-      else
-        0
-      end
+    min_threshold_records_updated = check_min_threshold(price, cached_min())
 
     results = %{
       max_threshold_met: max_threshold_records_updated != 0,
@@ -86,6 +90,56 @@ defmodule Coyneye.Threshold do
     update_cache(results)
 
     results
+  end
+
+  def check_max_threshold(_price, nil), do: 0
+  def check_max_threshold(price, max_threshold) do
+    {%{amount: threshold_amount, condition: condition}, _} = max_threshold
+                        |> Map.split([:amount, :condition])
+
+    if price_meets_max_threshold_condition(price, threshold_amount, condition) do
+      unmet_max_thresholds_exceeded(price)
+      |> Coyneye.Repo.update_all(
+        set: [
+          met: true
+        ]
+      )
+      |> elem(0)
+    else
+      0
+    end
+  end
+
+  defp price_meets_max_threshold_condition(price, threshold_amount, :met) do
+    price >= threshold_amount
+  end
+  defp price_meets_max_threshold_condition(price, threshold_amount, :exceeded) do
+    price > threshold_amount
+  end
+
+  def check_min_threshold(_price, nil), do: 0
+  def check_min_threshold(price, min_threshold) do
+    {%{amount: threshold_amount, condition: condition}, _} = min_threshold
+                        |> Map.split([:amount, :condition])
+
+    if price_meets_min_threshold_condition(price, threshold_amount, condition) do
+      unmet_min_thresholds_exceeded(price)
+      |> Coyneye.Repo.update_all(
+        set: [
+          met: true
+        ]
+      )
+      |> elem(0)
+    else
+      0
+    end
+  end
+
+  defp price_meets_min_threshold_condition(price, threshold_amount, :met) do
+    price <= threshold_amount
+  end
+  defp price_meets_min_threshold_condition(price, threshold_amount, :exceeded) do
+    price < threshold_amount
   end
 
   def unmet_max_thresholds do
@@ -104,18 +158,13 @@ defmodule Coyneye.Threshold do
     Query.from(mt in unmet_min_thresholds(), where: mt.amount >= ^price)
   end
 
-  defp threshold_amount(nil), do: -1
+  defp threshold(nil), do: nil
 
-  defp threshold_amount(query_result = %MaxThreshold{}) do
-    {:ok, threshold_amount} = Map.fetch(query_result, :amount)
+  #defp threshold(query_result) when query_result in [%MaxThreshold{}, %MinThreshold{}] do
+  defp threshold(query_result) do
+    {threshold_values, _} = Map.split(query_result, [:amount, :condition])
 
-    threshold_amount
-  end
-
-  defp threshold_amount(query_result = %MinThreshold{}) do
-    {:ok, threshold_amount} = Map.fetch(query_result, :amount)
-
-    threshold_amount
+    threshold_values
   end
 
   defp update_cache(%{max_threshold_met: true}) do
@@ -145,4 +194,12 @@ defmodule Coyneye.Threshold do
   def cached_min do
     DatabaseCache.get(:maximum_unmet_minimum_threshold, &maximum_unmet_minimum/0)
   end
+
+  def cached_max_amount, do: cached_max() |> cached_max_amount_helper
+  def cached_max_amount_helper(nil), do: -1
+  def cached_max_amount_helper(max), do: Map.get(max, :amount)
+
+  def cached_min_amount, do: cached_min() |> cached_min_amount_helper
+  def cached_min_amount_helper(nil), do: -1
+  def cached_min_amount_helper(min), do: Map.get(min, :amount)
 end

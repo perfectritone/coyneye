@@ -6,13 +6,15 @@
   <div class='threshold-forms'>
     <%= form_for max_threshold_changeset(), Routes.max_threshold_path(@conn, :create), fn f -> %>
       <%= text_input f, :amount %>
-      <%= submit "↑" %>
+      <%= submit "↑", name: "met" %>
+      <%= submit "↑↑", name: "exceeded" %>
       <%= live_render(@conn, CoyneyeWeb.MaxThresholdLive) %>
     <% end %>
 
     <%= form_for min_threshold_changeset(), Routes.min_threshold_path(@conn, :create), fn f -> %>
       <%= text_input f, :amount %>
-      <%= submit "↓" %>
+      <%= submit "↓", name: "met" %>
+      <%= submit "↓↓", name: "exceeded" %>
       <%= live_render(@conn, CoyneyeWeb.MinThresholdLive) %>
     <% end %>
   </div>

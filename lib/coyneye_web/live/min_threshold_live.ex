@@ -27,5 +27,5 @@ defmodule CoyneyeWeb.MinThresholdLive do
     assign(socket, :min_threshold, amount())
   end
 
-  defp amount, do: Threshold.cached_min
+  defp amount, do: Threshold.cached_min_amount
 end

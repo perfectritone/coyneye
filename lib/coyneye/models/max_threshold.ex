@@ -10,6 +10,7 @@ defmodule Coyneye.Model.MaxThreshold do
     field :amount, :float
     field :met, :boolean, default: false
     field :currency_id, :id
+    field :condition, Ecto.Enum, values: [met: 1, exceeded: 2]
 
     timestamps()
   end
@@ -17,7 +18,7 @@ defmodule Coyneye.Model.MaxThreshold do
   @doc false
   def changeset(max_threshold, attrs) do
     max_threshold
-    |> cast(attrs, [:amount, :met])
-    |> validate_required([:amount, :met])
+    |> cast(attrs, [:amount, :met, :condition])
+    |> validate_required([:amount, :met, :condition])
   end
 end
