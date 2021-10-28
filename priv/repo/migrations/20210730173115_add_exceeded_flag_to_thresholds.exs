@@ -1,27 +1,23 @@
 defmodule Coyneye.Repo.Migrations.AddExceededFlagToThresholds do
   use Ecto.Migration
-  alias Coyneye.Model.{MaxThreshold, MinThreshold}
-  alias Coyneye.{Repo}
 
-  def change do
+  def up do
     alter table("max_thresholds") do
-      add :condition, :integer
-    end
-
-    Repo.update_all(MaxThreshold, set: [condition: :met])
-
-    alter table("max_thresholds") do
-      modify :condition, :integer, null: true
+      add :condition, :integer, default: 1, null: false
     end
 
     alter table("min_thresholds") do
-      add :condition, :integer
+      add :condition, :integer, default: 1, null: false
+    end
+  end
+
+  def down do
+    alter table("max_thresholds") do
+      remove :condition
     end
 
-    Repo.update_all(MinThreshold, set: [condition: :met])
-
     alter table("min_thresholds") do
-      modify :condition, :integer, null: true
+      remove :condition
     end
   end
 end

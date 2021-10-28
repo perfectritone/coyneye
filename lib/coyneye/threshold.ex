@@ -23,12 +23,12 @@ defmodule Coyneye.Threshold do
 
   def minimum_unmet_maximum_amount do
     minimum_unmet_maximum()
-    |> Map.fetch("amount")
+    .amount
   end
 
   def maximum_unmet_minimum_amount do
     maximum_unmet_minimum()
-    |> Map.fetch("amount")
+    .amount
   end
 
   def new_max_threshold do
