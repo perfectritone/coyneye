@@ -53,6 +53,15 @@ config :coyneye, CoyneyeWeb.Endpoint,
 # If desired, both `http:` and `https:` keys can be
 # configured to run both http and https servers on
 # different ports.
+#
+ config :coyneye, CoyneyeWeb.Endpoint,
+    http: [port: 4000],
+    https: [
+      port: 4001,
+      cipher_suite: :strong,
+      certfile: "priv/cert/selfsigned.pem",
+      keyfile: "priv/cert/selfsigned_key.pem"
+    ]
 
 # Watch static and templates for browser reloading.
 config :coyneye, CoyneyeWeb.Endpoint,

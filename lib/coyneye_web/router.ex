@@ -18,9 +18,9 @@ defmodule CoyneyeWeb.Router do
   scope "/", CoyneyeWeb do
     pipe_through :browser
 
-    get "/", PricesController, :index
-    get "/prices", PricesController, :index
-    get "/prices/:currency_pair", PricesController, :show
+    get "/", PriceController, :index
+    get "/prices", PriceController, :index
+    get "/prices/:currency_pair", PriceController, :show
     post "/max_thresholds", MaxThresholdController, :create
     post "/min_thresholds", MinThresholdController, :create
 

@@ -74,6 +74,7 @@ defmodule CoyneyeWeb do
       import CoyneyeWeb.ErrorHelpers
       import CoyneyeWeb.Gettext
       alias CoyneyeWeb.Router.Helpers, as: Routes
+      import Phoenix.LiveView.Helpers
     end
   end
 

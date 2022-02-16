@@ -1,4 +1,4 @@
-defmodule CoyneyeWeb.PricesController do
+defmodule CoyneyeWeb.PriceController do
   use CoyneyeWeb, :controller
 
   def index(conn, _params) do

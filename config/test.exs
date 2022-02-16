@@ -8,7 +8,7 @@ use Mix.Config
 config :coyneye, Coyneye.Repo,
   username: "postgres",
   password: "postgres",
-  database: "coyneye_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "coyneye_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
@@ -19,4 +19,11 @@ config :coyneye, CoyneyeWeb.Endpoint,
   server: false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+# config :logger, level: :warn
+
+config :logger,
+  :console,
+  format: "[$level] $message\n",
+  handle_sasl_reports: true,
+  handle_otp_reports: true,
+  level: :debug

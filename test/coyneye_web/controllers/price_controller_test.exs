@@ -1,4 +1,4 @@
-defmodule CoyneyeWeb.PricesControllerTest do
+defmodule CoyneyeWeb.PriceControllerTest do
   use CoyneyeWeb.ConnCase
 
   # test "GET /", %{conn: conn} do

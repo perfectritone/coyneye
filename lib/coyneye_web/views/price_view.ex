@@ -1,4 +1,4 @@
-defmodule CoyneyeWeb.PricesView do
+defmodule CoyneyeWeb.PriceView do
   use CoyneyeWeb, :view
 
   alias Coyneye.Threshold

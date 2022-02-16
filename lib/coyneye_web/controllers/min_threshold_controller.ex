@@ -13,6 +13,6 @@ defmodule CoyneyeWeb.MinThresholdController do
 
   defp create_redirect({:ok, _threshold}, conn) do
     conn
-    |> redirect(to: CoyneyeWeb.Router.Helpers.prices_path(conn, :index))
+    |> redirect(to: CoyneyeWeb.Router.Helpers.price_path(conn, :index))
   end
 end
