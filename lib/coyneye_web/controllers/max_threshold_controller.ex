@@ -3,12 +3,12 @@ defmodule CoyneyeWeb.MaxThresholdController do
   alias Coyneye.Threshold
 
   def create(conn, %{"met" => _, "max_threshold" => %{"amount" => amounts}}) do
-    process_thresholds(&create_met_thresholds/1, amounts)
+    process_thresholds(amounts, &create_met_threshold/1)
 
     success_redirect(conn)
   end
   def create(conn, %{"exceeded" => _, "max_threshold" => %{"amount" => amounts}}) do
-    process_thresholds(&create_exceeded_thresholds/1, amounts)
+    process_thresholds(amounts, &create_exceeded_threshold/1)
 
     success_redirect(conn)
   end
@@ -26,27 +26,23 @@ defmodule CoyneyeWeb.MaxThresholdController do
     Enum.map(amounts, &Threshold.valid_threshold/1)
   end
 
-  defp create_met_thresholds(amounts) do
-    Enum.map(amounts, create_met_threshold())
+  defp create_thresholds(amounts, create_threshold) do
+    Enum.map(amounts, create_threshold)
   end
 
-  defp create_exceeded_thresholds(amounts) do
-    Enum.map(amounts, create_exceeded_threshold())
-  end
-
-  defp create_met_threshold do
+  defp create_met_threshold(amount) do
     # also, can this class include a function with these functions but just
     # override the .create_max_met part?
-    &Threshold.create_max_met(%{"amount" => &1})
+    Threshold.create_max_met(%{"amount" => amount})
   end
 
-  defp create_exceeded_threshold do
-    &Threshold.create_max_exceeded(%{"amount" => &1})
+  defp create_exceeded_threshold(amount) do
+    Threshold.create_max_exceeded(%{"amount" => amount})
   end
 
-  defp process_thresholds(create_thresholds, amounts) do
+  defp process_thresholds(amounts, create_threshold) do
     parse_amounts(amounts)
     |> validate_thresholds
-    |> create_thresholds.()
+    |> create_thresholds(create_threshold)
   end
 end
