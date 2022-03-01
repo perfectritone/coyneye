@@ -39,15 +39,15 @@ defmodule Coyneye.Threshold do
     MinThreshold.changeset(%MinThreshold{}, %{})
   end
 
-  def create_max_met(%{"amount" => amount}) do
-    create_max(%{"amount" => amount, "condition" => :met})
+  def create_max_met(%{amount: amount}) do
+    create_max(%{amount: amount, condition: :met})
   end
 
-  def create_max_exceeded(%{"amount" => amount}) do
-    create_max(%{"amount" => amount, "condition" => :exceeded})
+  def create_max_exceeded(%{amount: amount}) do
+    create_max(%{amount: amount, condition: :exceeded})
   end
 
-  def create_max(%{"amount" => amount, "condition" => condition}) do
+  def create_max(%{amount: amount, condition: condition}) do
     result =
       %MaxThreshold{}
       |> MaxThreshold.changeset(%{"amount" => amount, "condition" => condition})
@@ -58,15 +58,15 @@ defmodule Coyneye.Threshold do
     result
   end
 
-  def create_min_met(%{"amount" => amount}) do
-    create_min(%{"amount" => amount, "condition" => :met})
+  def create_min_met(%{amount: amount}) do
+    create_min(%{amount: amount, condition: :met})
   end
 
-  def create_min_exceeded(%{"amount" => amount}) do
-    create_min(%{"amount" => amount, "condition" => :exceeded})
+  def create_min_exceeded(%{amount: amount}) do
+    create_min(%{amount: amount, condition: :exceeded})
   end
 
-  def create_min(%{"amount" => amount, "condition" => condition}) do
+  def create_min(%{amount: amount, condition: condition}) do
     result =
       %MinThreshold{}
       |> MinThreshold.changeset(%{"amount" => amount, "condition" => condition})

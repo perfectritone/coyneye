@@ -3,7 +3,7 @@ defmodule Coyneye.ThresholdTest do
   use Coyneye.DataCase
 
   test "create_max creates a threshold and it can be returned" do
-    _result = Coyneye.Threshold.create_max_met(%{"amount" => 100})
+    _result = Coyneye.Threshold.create_max_met(%{amount: 100})
 
     min_maximum = Coyneye.Threshold.minimum_unmet_maximum_amount()
 
@@ -11,7 +11,7 @@ defmodule Coyneye.ThresholdTest do
   end
 
   test "create_min creates a threshold and it can be returned" do
-    _result = Coyneye.Threshold.create_min_met(%{"amount" => 50})
+    _result = Coyneye.Threshold.create_min_met(%{amount: 50})
 
     max_minimum = Coyneye.Threshold.maximum_unmet_minimum_amount()
 
@@ -19,8 +19,8 @@ defmodule Coyneye.ThresholdTest do
   end
 
   test "check_thresholds returns the thresholds that have been exceeded" do
-    _min_result = Coyneye.Threshold.create_min_met(%{"amount" => 50})
-    _max_result = Coyneye.Threshold.create_max_met(%{"amount" => 100})
+    _min_result = Coyneye.Threshold.create_min_met(%{amount: 50})
+    _max_result = Coyneye.Threshold.create_max_met(%{amount: 100})
 
     result = Coyneye.Threshold.check_thresholds(100)
 

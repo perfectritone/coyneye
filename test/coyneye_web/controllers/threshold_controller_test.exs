@@ -35,8 +35,8 @@ defmodule CoyneyeWeb.ThresholdController do
 
   end
 
-  defp build_attrs(), do: build_attrs(%{"amount": @threshold_1})
+  defp build_attrs(), do: build_attrs(%{amount: @threshold_1})
   defp build_attrs(%{amount: amount}) do
-    %{"met": "true", "max_threshold": %{"amount": amount}}
+    %{met: "true", max_threshold: %{amount: amount}}
   end
 end

@@ -1,4 +1,8 @@
 defmodule Coyneye.PriceFormatter do
+  @moduledoc """
+  Simple price formatting
+  """
+
   def call(-1), do: nil
 
   def call(float) do

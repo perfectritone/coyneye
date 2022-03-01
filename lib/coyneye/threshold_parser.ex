@@ -34,7 +34,7 @@ defmodule Coyneye.ThresholdParser do
   end
 
   defp create_thresholds(amounts, create_threshold) do
-    Enum.map(amounts, &(create_threshold.(%{"amount" => &1})))
+    Enum.map(amounts, &(create_threshold.(%{amount: &1})))
   end
 
   defp valid_threshold(amount) do

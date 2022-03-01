@@ -1,6 +1,10 @@
 defmodule Coyneye.ThresholdNotifier do
   alias Coyneye.{PushoverService, Threshold}
 
+  @moduledoc """
+  Send threshold notifications to the Pushover Service
+  """
+
   def call(price) do
     Threshold.check_thresholds(price)
     |> threshold_direction

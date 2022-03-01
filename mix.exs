@@ -48,7 +48,7 @@ defmodule Coyneye.MixProject do
       {:websockex, "~> 0.4.2"},
       {:poison, "~> 4.0"},
       {:httpoison, "~> 1.6.1"},
-      {:credo, "~> 1.2", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:sentry, "~> 7.0"},
       {:phoenix_live_view, "~> 0.17.1"},
       {:floki, ">= 0.27.0", only: :test}
