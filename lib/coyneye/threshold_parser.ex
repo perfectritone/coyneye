@@ -6,11 +6,17 @@ defmodule Coyneye.ThresholdParser do
   Intermediary between controller and interactions with the DB
   """
 
-  def process_thresholds(amounts, condition: :met) do
+  def process_thresholds(amounts, condition: :met, direction: :max) do
     parse_validate_and_create_thresholds(amounts, &Threshold.create_max_met/1)
   end
-  def process_thresholds(amounts, condition: :exceeded) do
+  def process_thresholds(amounts, condition: :exceeded, direction: :max) do
     parse_validate_and_create_thresholds(amounts, &Threshold.create_max_exceeded/1)
+  end
+  def process_thresholds(amounts, condition: :met, direction: :min) do
+    parse_validate_and_create_thresholds(amounts, &Threshold.create_min_met/1)
+  end
+  def process_thresholds(amounts, condition: :exceeded, direction: :min) do
+    parse_validate_and_create_thresholds(amounts, &Threshold.create_min_exceeded/1)
   end
 
   defp parse_validate_and_create_thresholds(amounts, create_threshold) do
