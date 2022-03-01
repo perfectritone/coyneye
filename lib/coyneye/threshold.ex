@@ -39,11 +39,6 @@ defmodule Coyneye.Threshold do
     MinThreshold.changeset(%MinThreshold{}, %{})
   end
 
-  def valid_threshold(amount) do
-    Float.parse(amount)
-    |> Kernel.elem(0)
-  end
-
   def create_max_met(%{"amount" => amount}) do
     create_max(%{"amount" => amount, "condition" => :met})
   end
