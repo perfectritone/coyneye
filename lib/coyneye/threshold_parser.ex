@@ -1,6 +1,4 @@
 defmodule Coyneye.ThresholdParser do
-  alias Coyneye.Threshold
-
   @moduledoc """
   Threshold parser.
   Intermediary between controller and interactions with the DB

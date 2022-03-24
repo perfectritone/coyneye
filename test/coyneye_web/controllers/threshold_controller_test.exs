@@ -6,7 +6,7 @@ defmodule CoyneyeWeb.ThresholdController do
   @threshold_3 "1450"
   @threshold_list [@threshold_1, @threshold_2, @threshold_3]
   @multiple_thresholds Enum.join(@threshold_list, " ")
-  @invalid_amount "abc"
+  # @invalid_amount "abc"
 
   describe "create max threshold" do
     test "redirects back to index when data is valid", %{conn: conn} do
