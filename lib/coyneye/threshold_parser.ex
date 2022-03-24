@@ -6,35 +6,18 @@ defmodule Coyneye.ThresholdParser do
   Intermediary between controller and interactions with the DB
   """
 
-  def process_thresholds(amounts, condition: :met, direction: :max) do
-    parse_validate_and_create_thresholds(amounts, &Threshold.create_max_met/1)
-  end
-  def process_thresholds(amounts, condition: :exceeded, direction: :max) do
-    parse_validate_and_create_thresholds(amounts, &Threshold.create_max_exceeded/1)
-  end
-  def process_thresholds(amounts, condition: :met, direction: :min) do
-    parse_validate_and_create_thresholds(amounts, &Threshold.create_min_met/1)
-  end
-  def process_thresholds(amounts, condition: :exceeded, direction: :min) do
-    parse_validate_and_create_thresholds(amounts, &Threshold.create_min_exceeded/1)
-  end
-
-  defp parse_validate_and_create_thresholds(amounts, create_threshold) do
-    parse_amounts(amounts)
-    |> validate_thresholds
-    |> create_thresholds(create_threshold)
-  end
-
-  defp parse_amounts(amounts) do
+  def parse_amounts(amounts) do
     String.split(amounts, [" ", ","], trim: true)
+    #|> parse_multipliers
+    |> validate_thresholds
   end
 
-  defp validate_thresholds(amounts) do
+  def validate_thresholds(amounts) do
     Enum.map(amounts, &valid_threshold/1)
   end
 
-  defp create_thresholds(amounts, create_threshold) do
-    Enum.map(amounts, &(create_threshold.(%{amount: &1})))
+  defp parse_multipliers(amount) do
+    Regex.named_captures(~r/(?<base>\d+)\+(?<multiplicand>\d+)x(?<multiplier>\d+)/, amount)
   end
 
   defp valid_threshold(amount) do

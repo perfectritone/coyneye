@@ -1,14 +1,14 @@
 defmodule CoyneyeWeb.MinThresholdController do
   use CoyneyeWeb, :controller
-  alias Coyneye.ThresholdParser
+  alias Coyneye.ThresholdCreator
 
   def create(conn, %{"met" => _, "min_threshold" => %{"amount" => amounts}}) do
-    ThresholdParser.process_thresholds(amounts, condition: :met, direction: :min)
+    ThresholdCreator.create(amounts, condition: :met, direction: :min)
 
     success_redirect(conn)
   end
   def create(conn, %{"exceeded" => _, "min_threshold" => %{"amount" => amounts}}) do
-    ThresholdParser.process_thresholds(amounts, condition: :exceeded, direction: :min)
+    ThresholdCreator.create(amounts, condition: :exceeded, direction: :min)
 
     success_redirect(conn)
   end

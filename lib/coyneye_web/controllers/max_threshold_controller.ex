@@ -1,14 +1,14 @@
 defmodule CoyneyeWeb.MaxThresholdController do
   use CoyneyeWeb, :controller
-  alias Coyneye.ThresholdParser
+  alias Coyneye.ThresholdCreator
 
   def create(conn, %{"met" => _, "max_threshold" => %{"amount" => amounts}}) do
-    ThresholdParser.process_thresholds(amounts, condition: :met, direction: :max)
+    ThresholdCreator.create(amounts, condition: :met, direction: :max)
 
     success_redirect(conn)
   end
   def create(conn, %{"exceeded" => _, "max_threshold" => %{"amount" => amounts}}) do
-    ThresholdParser.process_thresholds(amounts, condition: :exceeded, direction: :max)
+    ThresholdCreator.create(amounts, condition: :exceeded, direction: :max)
 
     success_redirect(conn)
   end
