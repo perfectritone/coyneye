@@ -5,7 +5,7 @@ defmodule Coyneye.ThresholdParser do
   Threshold parser.
   Intermediary between controller and interactions with the DB
   """
-  @multiplier_regex ~r/(?<base>\d+)\+(?<multiplicand>\d+)x(?<multiplier>\d+)/
+  @multiplier_regex ~r/(?<base>\d+)(?<operand>[\+-])(?<multiplicand>\d+)x(?<multiplier>\d+)/
 
   def parse_amounts(amounts) do
     String.split(amounts, [" ", ","], trim: true)
@@ -24,16 +24,23 @@ defmodule Coyneye.ThresholdParser do
     end
   end
 
-  defp parse_multiplier(%{"multiplier" => multiplier, "base" => base, "multiplicand" => multiplicand}) do
+  defp parse_multiplier(%{"base" => base, "operand" => operand, "multiplicand" => multiplicand, "multiplier" => multiplier}) do
     {multiplier, _} = Integer.parse(multiplier)
     {base, _} = Float.parse(base)
     {multiplicand, _} = Float.parse(multiplicand)
+    operand_function = case operand do
+      "+" -> &sum/2
+      "-" -> &difference/2
+    end
 
-    Enum.map(Enum.to_list(0..multiplier), fn(x) -> base + x * multiplicand end)
+    Enum.map(Enum.to_list(0..multiplier), fn(x) -> operand_function.(base, x * multiplicand) end)
   end
 
   defp cast_threshold(amount) do
     Float.parse(amount)
     |> Kernel.elem(0)
   end
+
+  defp sum(a, b), do: a + b
+  defp difference(a, b), do: a - b
 end
