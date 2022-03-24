@@ -1,4 +1,4 @@
-defmodule ThresholdCreator do
+defmodule Coyneye.ThresholdCreator do
   alias Coyneye.{Threshold, ThresholdParser}
 
   @moduledoc """

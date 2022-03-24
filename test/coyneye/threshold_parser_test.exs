@@ -14,6 +14,18 @@ defmodule Coyneye.ThresholdParserTest do
   # test "max exceeded delimited"
   #
   test "integer returns itself" do
-    assert ThresholdParser.parse_amounts("100") == "100"
+    assert ThresholdParser.parse_amounts("100") == [100]
+  end
+
+  test "float returns itself" do
+    assert ThresholdParser.parse_amounts("100.0") == [100.0]
+  end
+
+  test "multiple numbers return themselves" do
+    assert ThresholdParser.parse_amounts("100 200.1 300") == [100, 200.1, 300]
+  end
+
+  test "multipliers return all thresholds calculated" do
+    assert ThresholdParser.parse_amounts("100+25x4") == [100, 125, 150, 175, 200]
   end
 end
