@@ -77,6 +77,22 @@ defmodule Coyneye.Threshold do
     result
   end
 
+  def delete_all_max() do
+    result = Repo.delete_all(MaxThreshold)
+
+    new_max()
+
+    result
+  end
+
+  def delete_all_min() do
+    result = Repo.delete_all(MinThreshold)
+
+    new_min()
+
+    result
+  end
+
   def check_thresholds(price) do
     max_threshold_records_updated = check_max_threshold(price, cached_max())
 

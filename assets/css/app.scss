@@ -54,9 +54,19 @@ p {
   margin-top: 1.5em;
   margin-bottom: 1.5em;
 }
+.threshold-form {
+  display: inline-block;
+}
+.threshold-form button{
+  vertical-align: bottom;
+}
 .note {
   font-size: 0.7em;
 }
 .footer {
   font-size: 0.7em;
+}
+.btn {
+   vertical-align: top !important;
+   margin-top: 20px !important;
 }

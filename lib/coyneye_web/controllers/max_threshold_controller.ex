@@ -13,6 +13,11 @@ defmodule CoyneyeWeb.MaxThresholdController do
     success_redirect(conn)
   end
 
+  def destroy_all(conn, %{}) do
+    result = Coyneye.Threshold.delete_all_max()
+    success_redirect(conn)
+  end
+
   defp success_redirect(conn) do
     conn
     |> redirect(to: CoyneyeWeb.Router.Helpers.price_path(conn, :index))
