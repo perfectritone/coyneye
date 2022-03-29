@@ -18,6 +18,8 @@
       <%= submit "↓↓", name: "exceeded" %>
       <%= live_render(@conn, CoyneyeWeb.MinThresholdLive) %>
     <% end %>
+
+    <%= button("x", to: "min_thresholds/", method: :delete, class: "btn") %>
   </div>
 
   <p class='note' hidden='true'>
