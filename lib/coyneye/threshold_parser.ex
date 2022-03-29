@@ -3,7 +3,7 @@ defmodule Coyneye.ThresholdParser do
   Threshold parser.
   Intermediary between controller and interactions with the DB
   """
-  @multiplier_regex ~r/(?<base>\d+)(?<operand>[\+-])(?<multiplicand>\d+)x(?<multiplier>\d+)/
+  @multiplier_regex ~r/(?<base>\d+)(?<operand>[\+-])(?<multiplicand>\d+)[x*](?<multiplier>\d+)/
 
   def parse_amounts(amounts) do
     String.split(amounts, [" ", ","], trim: true)
