@@ -14,7 +14,7 @@ defmodule CoyneyeWeb.MinThresholdController do
   end
 
   def destroy_all(conn, %{}) do
-    result = Coyneye.Threshold.delete_all_min()
+    _result = Coyneye.Threshold.delete_all_min()
     success_redirect(conn)
   end
 

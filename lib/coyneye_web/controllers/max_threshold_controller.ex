@@ -14,7 +14,7 @@ defmodule CoyneyeWeb.MaxThresholdController do
   end
 
   def destroy_all(conn, %{}) do
-    result = Coyneye.Threshold.delete_all_max()
+    _result = Coyneye.Threshold.delete_all_max()
     success_redirect(conn)
   end
 
