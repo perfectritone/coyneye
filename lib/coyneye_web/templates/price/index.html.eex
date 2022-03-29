@@ -4,7 +4,7 @@
   </div>
 
   <div class='threshold-forms'>
-    <%= f = form_for max_threshold_changeset(), Routes.max_threshold_path(@conn, :create), class: "threshold-form" %>
+    <%= f = form_for max_threshold_changeset(), Routes.max_threshold_path(@conn, :create), class: "threshold-form", style: "display: inline-block" %>
       <%= text_input f, :amount %>
       <%= submit "↑", name: "met" %>
       <%= submit "↑↑", name: "exceeded" %>
@@ -13,7 +13,7 @@
     <%= button("x", to: "max_thresholds/", method: :delete, class: "btn") %>
     <%= live_render(@conn, CoyneyeWeb.MaxThresholdLive) %>
 
-    <%= f = form_for min_threshold_changeset(), Routes.min_threshold_path(@conn, :create), class: "threshold-form"%>
+    <%= f = form_for min_threshold_changeset(), Routes.min_threshold_path(@conn, :create), class: "threshold-form", style: "display: inline-block" %>
       <%= text_input f, :amount %>
       <%= submit "↓", name: "met" %>
       <%= submit "↓↓", name: "exceeded" %>
