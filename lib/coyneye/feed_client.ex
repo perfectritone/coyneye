@@ -33,7 +33,7 @@ defmodule Coyneye.FeedClient do
   end
 
   def terminate(reason, state) do
-    IO.puts(\nSocket Terminating:\n#{inspect reason}\n\n#{inspect state}\n")
+    IO.puts("\nSocket Terminating:\n#{inspect reason}\n\n#{inspect state}\n")
     exit(:normal)
   end
 
