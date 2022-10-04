@@ -34,6 +34,10 @@ defmodule Coyneye.ThresholdParserTest do
   end
 
   test "multipliers return all thresholds calculated with subtraction" do
-    assert ThresholdParser.parse_amounts("200-25x4") == [200, 175, 150, 125, 100]
+    assert ThresholdParser.parse_amounts("200-25*4") == [200, 175, 150, 125, 100]
+  end
+
+  test "multipliers return all thresholds calculated with non-whole base" do
+    assert ThresholdParser.parse_amounts("200.1+25*2") == [200.1, 225.1, 250.1]
   end
 end
