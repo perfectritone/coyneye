@@ -3,6 +3,7 @@
 To start your Phoenix server:
 
   * Install dependencies with `mix deps.get`
+  * Ensure postgresql is installed, running and initialized. Update config with credentials
   * Create and migrate your database with `mix ecto.setup`
   * Install Node.js dependencies with `npm install` inside the `assets` directory
   * Start Phoenix endpoint with `mix phx.server`

@@ -21,13 +21,13 @@ defmodule Coyneye.FeedClient do
   end
 
   def handle_connect(_conn, state) do
-    IO.puts('Connected')
+    IO.puts('Feed Client Connected')
 
     {:ok, state}
   end
 
   def handle_disconnect(conn, state) do
-    IO.puts('Disconnected')
+    IO.puts('Feed Client Disconnected')
 
     {:reconnect, conn, state}
   end
