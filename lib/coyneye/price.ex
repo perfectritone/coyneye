@@ -1,13 +1,12 @@
 defmodule Coyneye.Price do
   require Ecto.Query
-  alias Coyneye.{DatabaseCache, PubSub, Repo}
+  alias Coyneye.{DatabaseCache, PriceFormatter, Repo}
   alias Coyneye.Model.Price
 
   @moduledoc """
   Price helper
   """
-
-  @topic inspect(__MODULE__)
+  @default_currency_pair "eth_usd"
 
   def last do
     DatabaseCache.get(:last_price, &last_query/0)
@@ -15,6 +14,14 @@ defmodule Coyneye.Price do
 
   def last_amount do
     DatabaseCache.get(:last_price, &last_query/0).amount
+  end
+
+  def formatted_last_price do
+    formatted_price(last_amount(), @default_currency_pair)
+  end
+
+  def formatted_price(amount, currency_pair) do
+    "#{formatted_currency_pair(currency_pair)}: #{PriceFormatter.call(amount)}"
   end
 
   def persist_price(amount) do
@@ -28,15 +35,19 @@ defmodule Coyneye.Price do
     result
   end
 
-  def subscribe do
-    Phoenix.PubSub.subscribe(PubSub, @topic)
-  end
+  def notify_channel_subscribers({:ok, amount}) do
+    currency_pair = @default_currency_pair
 
-  def notify_subscribers({:ok, amount}) do
-    Phoenix.PubSub.broadcast(PubSub, @topic, {__MODULE__, amount})
+    CoyneyeWeb.Endpoint.broadcast!("price:#{currency_pair}", "new_price",
+      %{formatted_price: formatted_price(amount, currency_pair), currency_pair: currency_pair})
   end
 
   defp last_query do
     Price |> Ecto.Query.last() |> Repo.one()
+  end
+
+  defp formatted_currency_pair(currency_pair) do
+    String.split(currency_pair, "_")
+      |> Enum.map_join("/", &String.upcase/1)
   end
 end

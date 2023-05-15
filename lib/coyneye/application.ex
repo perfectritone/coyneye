@@ -6,14 +6,17 @@ defmodule Coyneye.Application do
 
   use Application
 
+  @impl true
   def start(_type, _args) do
     children = [
-      # Start the Ecto repository
-      Coyneye.Repo,
       # Start the Telemetry supervisor
       CoyneyeWeb.Telemetry,
+      # Start the Ecto repository
+      Coyneye.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: Coyneye.PubSub},
+      # Start Finch
+      {Finch, name: Coyneye.Finch},
       # Start the Endpoint (http/https)
       CoyneyeWeb.Endpoint,
       # Start a worker by calling: Coyneye.Worker.start_link(arg)
@@ -30,6 +33,7 @@ defmodule Coyneye.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  @impl true
   def config_change(changed, _new, removed) do
     CoyneyeWeb.Endpoint.config_change(changed, removed)
     :ok

@@ -20,6 +20,6 @@ defmodule CoyneyeWeb.MaxThresholdController do
 
   defp success_redirect(conn) do
     conn
-    |> redirect(to: CoyneyeWeb.Router.Helpers.price_path(conn, :index))
+    |> redirect(to: ~p"/prices")
   end
 end

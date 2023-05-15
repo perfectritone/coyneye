@@ -8,22 +8,20 @@ import Config
 config :coyneye, Coyneye.Repo,
   username: "postgres",
   password: "postgres",
-  database: "coyneye_test",
   hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  database: "coyneye_test#{System.get_env("MIX_TEST_PARTITION")}",
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: 10
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
 config :coyneye, CoyneyeWeb.Endpoint,
-  http: [port: 4002],
+  http: [ip: {127, 0, 0, 1}, port: 4002],
+  secret_key_base: "oMN56a60EdLRRhjWm/ASnRFYO4F0O8//DFTTYIGSGM9CzqUyXuKP5TXMj+LtfvMC",
   server: false
 
 # Print only warnings and errors during test
-# config :logger, level: :warn
+config :logger, level: :warning
 
-config :logger,
-  :console,
-  format: "[$level] $message\n",
-  handle_sasl_reports: true,
-  handle_otp_reports: true,
-  level: :debug
+# Initialize plugs at runtime for faster test compilation
+config :phoenix, :plug_init_mode, :runtime

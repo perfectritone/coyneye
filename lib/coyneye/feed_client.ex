@@ -72,7 +72,7 @@ defmodule Coyneye.FeedClient do
     {price, _} = Float.parse(price_string)
 
     Price.persist_price(price)
-    Price.notify_subscribers({:ok, price})
+    Price.notify_channel_subscribers({:ok, price})
     ThresholdNotifier.call(price)
 
     {:ok, state}

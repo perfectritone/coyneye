@@ -7,14 +7,15 @@ defmodule CoyneyeWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_coyneye_key",
-    signing_salt: "46RsN5Ah"
+    signing_salt: "9Kj7LD4j",
+    same_site: "Lax"
   ]
 
-  socket "/socket", CoyneyeWeb.UserSocket,
-    websocket: true,
-    longpoll: false
-
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
+
+  socket "/socket", CoyneyeWeb.PriceSocket,
+    websocket: [timeout: 45_000],
+    longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -24,7 +25,7 @@ defmodule CoyneyeWeb.Endpoint do
     at: "/",
     from: :coyneye,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: CoyneyeWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
