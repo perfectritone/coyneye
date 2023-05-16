@@ -1,12 +1,11 @@
 defmodule Coyneye.Price do
   require Ecto.Query
-  alias Coyneye.{DatabaseCache, PriceFormatter, Repo}
+  alias Coyneye.{Currency, DatabaseCache, PriceFormatter, Repo}
   alias Coyneye.Model.Price
 
   @moduledoc """
   Price helper
   """
-  @default_currency_pair "eth_usd"
 
   def last do
     DatabaseCache.get(:last_price, &last_query/0)
@@ -17,7 +16,7 @@ defmodule Coyneye.Price do
   end
 
   def formatted_last_price do
-    formatted_price(last_amount(), @default_currency_pair)
+    formatted_price(last_amount(), Currency.default_pair())
   end
 
   def formatted_price(amount, currency_pair) do
@@ -36,7 +35,7 @@ defmodule Coyneye.Price do
   end
 
   def notify_channel_subscribers({:ok, amount}) do
-    currency_pair = @default_currency_pair
+    currency_pair = Currency.default_pair()
 
     CoyneyeWeb.Endpoint.broadcast!("price:#{currency_pair}", "new_price",
       %{formatted_price: formatted_price(amount, currency_pair), currency_pair: currency_pair})

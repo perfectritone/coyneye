@@ -1,5 +1,5 @@
 defmodule Coyneye.ThresholdNotifier do
-  alias Coyneye.{PushoverService, Threshold}
+  alias Coyneye.{Currency, PriceFormatter, PushoverService, Threshold}
 
   @moduledoc """
   Send threshold notifications to the Pushover Service
@@ -7,8 +7,15 @@ defmodule Coyneye.ThresholdNotifier do
 
   def call(price) do
     Threshold.check_thresholds(price)
-    |> threshold_direction
+    |> handle_pushover_notifications(price)
+    |> broadcast_threshold_update
+  end
+
+  def handle_pushover_notifications(thresholds_met = %{}, price) do
+    threshold_direction(thresholds_met)
     |> send_threshold_notifications(price)
+
+    thresholds_met
   end
 
   defp send_threshold_notifications(nil, _price), do: {:ok}
@@ -25,6 +32,28 @@ defmodule Coyneye.ThresholdNotifier do
   defp threshold_direction(%{}), do: nil
 
   defp notification_message(direction, price) do
-    "USDT/ETH is #{direction} threshold (#{price})"
+    "USD/ETH is #{direction} threshold (#{price})"
   end
+
+  defp broadcast_threshold_update(%{max_threshold_met: true}) do
+    currency_pair = Currency.default_pair()
+
+    CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}", "max_threshold_met",
+      %{
+        new_max_threshold: PriceFormatter.call(Threshold.cached_max_amount),
+        currency_pair: currency_pair
+      })
+  end
+
+  defp broadcast_threshold_update(%{min_threshold_met: true}) do
+    currency_pair = Currency.default_pair()
+
+    CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}", "min_threshold_met",
+      %{
+        new_min_threshold: PriceFormatter.call(Threshold.cached_min_amount),
+        currency_pair: currency_pair
+      })
+  end
+
+  defp formatted_threshold(threshold_amount), do: PriceFormatter.call(threshold_amount)
 end

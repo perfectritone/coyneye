@@ -11,6 +11,7 @@ defmodule CoyneyeWeb.PriceSocket do
   # pointing to the `CoyneyeWeb.RoomChannel`:
   #
   channel "price:*", CoyneyeWeb.PriceChannel
+  channel "threshold:*", CoyneyeWeb.ThresholdChannel
 
   # To create a channel file, use the mix task:
   #

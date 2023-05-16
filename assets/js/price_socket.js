@@ -63,7 +63,24 @@ priceChannel.on("new_price", payload => {
   priceContainer.innerText = payload.formatted_price
 })
 
+let thresholdChannel = socket.channel("threshold:eth_usd", {})
+let maxThresholdContainer = document.querySelector("#max-threshold-amount")
+let minThresholdContainer = document.querySelector("#min-threshold-amount")
+
+thresholdChannel.on("max_threshold_met", payload => {
+  let new_threshold = payload.new_max_threshold || ''
+  maxThresholdContainer.innerText = `(${new_threshold})`
+})
+
+thresholdChannel.on("min_threshold_met", payload => {
+  let new_threshold = payload.new_min_threshold || ''
+  minThresholdContainer.innerText = `(${new_threshold})`
+})
+
 priceChannel.join()
+  .receive("ok", resp => { console.log("Joined successfully", resp) })
+  .receive("error", resp => { console.log("Unable to join", resp) })
+thresholdChannel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
 
