@@ -55,5 +55,7 @@ defmodule Coyneye.ThresholdNotifier do
       })
   end
 
+  defp broadcast_threshold_update(%{}), do: nil
+
   defp formatted_threshold(threshold_amount), do: PriceFormatter.call(threshold_amount)
 end
