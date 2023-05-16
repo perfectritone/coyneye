@@ -50,7 +50,8 @@ defmodule Coyneye.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:websockex, "~> 0.4.2"},
       {:poison, "~> 4.0"},
-      {:httpoison, "~> 1.6.1"}
+      {:httpoison, "~> 1.6.1"},
+      {:credo, "~> 1.7"}
     ]
   end
 

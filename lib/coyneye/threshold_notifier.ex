@@ -11,7 +11,7 @@ defmodule Coyneye.ThresholdNotifier do
     |> broadcast_threshold_update
   end
 
-  def handle_pushover_notifications(thresholds_met = %{}, price) do
+  def handle_pushover_notifications(%{} = thresholds_met, price) do
     threshold_direction(thresholds_met)
     |> send_threshold_notifications(price)
 
@@ -40,7 +40,7 @@ defmodule Coyneye.ThresholdNotifier do
 
     CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}", "max_threshold_met",
       %{
-        new_max_threshold: PriceFormatter.call(Threshold.cached_max_amount),
+        new_max_threshold: formatted_threshold(Threshold.cached_max_amount),
         currency_pair: currency_pair
       })
   end
@@ -50,7 +50,7 @@ defmodule Coyneye.ThresholdNotifier do
 
     CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}", "min_threshold_met",
       %{
-        new_min_threshold: PriceFormatter.call(Threshold.cached_min_amount),
+        new_min_threshold: formatted_threshold(Threshold.cached_min_amount),
         currency_pair: currency_pair
       })
   end
