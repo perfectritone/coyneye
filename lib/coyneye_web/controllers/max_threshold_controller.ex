@@ -13,6 +13,12 @@ defmodule CoyneyeWeb.MaxThresholdController do
     success_redirect(conn)
   end
 
+  def create(conn, %{}) do
+    ThresholdCreator.create_10s(direction: :max)
+
+    success_redirect(conn)
+  end
+
   def destroy_all(conn, %{}) do
     _result = Coyneye.Threshold.delete_all_max()
     success_redirect(conn)

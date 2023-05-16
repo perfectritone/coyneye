@@ -8,6 +8,7 @@
       <%= Phoenix.HTML.Form.text_input f, :amount %>
       <%= Phoenix.HTML.Form.submit "↑", name: "met" %>
       <%= Phoenix.HTML.Form.submit "↑↑", name: "exceeded" %>
+      <%= Phoenix.HTML.Link.button("10s", to: "max_thresholds/10s", method: :post, class: "btn") %>
       <%= Phoenix.HTML.Link.button("x", to: "max_thresholds/", method: :delete, class: "btn") %>
     <% end %>
 
@@ -19,6 +20,7 @@
       <%= Phoenix.HTML.Form.text_input f, :amount %>
       <%= Phoenix.HTML.Form.submit "↓", name: "met" %>
       <%= Phoenix.HTML.Form.submit "↓↓", name: "exceeded" %>
+      <%= Phoenix.HTML.Link.button("10s", to: "min_thresholds/10s", method: :post, class: "btn") %>
       <%= Phoenix.HTML.Link.button("x", to: "min_thresholds/", method: :delete, class: "btn") %>
     <% end %>
 

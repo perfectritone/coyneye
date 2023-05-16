@@ -21,8 +21,10 @@ defmodule CoyneyeWeb.Router do
     get "/prices", PriceController, :index
     get "/prices/:currency_pair", PriceController, :show
     post "/max_thresholds", MaxThresholdController, :create
+    post "/max_thresholds/10s", MaxThresholdController, :create
     delete "/max_thresholds", MaxThresholdController, :destroy_all
     post "/min_thresholds", MinThresholdController, :create
+    post "/min_thresholds/10s", MinThresholdController, :create
     delete "/min_thresholds", MinThresholdController, :destroy_all
 
     live "/recent_price", PriceLive

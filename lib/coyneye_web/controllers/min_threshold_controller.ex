@@ -13,6 +13,12 @@ defmodule CoyneyeWeb.MinThresholdController do
     success_redirect(conn)
   end
 
+  def create(conn, %{}) do
+    ThresholdCreator.create_10s(direction: :min)
+
+    success_redirect(conn)
+  end
+
   def destroy_all(conn, %{}) do
     _result = Coyneye.Threshold.delete_all_min()
     success_redirect(conn)
