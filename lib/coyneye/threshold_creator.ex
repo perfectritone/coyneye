@@ -18,19 +18,24 @@ defmodule Coyneye.ThresholdCreator do
     parse_and_create_thresholds(amounts, &Threshold.create_min_exceeded/1)
   end
 
-  def create_10s(direction: :max) do
-    number_of_higher_thresholds = 50
-    rounded_price = ceil(Price.last_amount / 10) * 10
+  @max_number_of_thresholds_to_create 50
+  def create_by(direction: :max, interval: interval) do
+    rounded_price = ceil(Price.last_amount / interval) * interval
 
-    amounts = Enum.map(0..number_of_higher_thresholds, fn n -> rounded_price + 10 * n end)
+    amounts = Enum.map(
+      0..@max_number_of_thresholds_to_create,
+      fn n -> rounded_price + interval * n end)
 
     create_thresholds(amounts, &Threshold.create_max_met/1)
   end
-  def create_10s(direction: :min) do
-    rounded_price = floor(Price.last_amount / 10) * 10
-    number_of_lower_thresholds = Integer.floor_div(rounded_price, 10) - 1
+  def create_by(direction: :min, interval: interval) do
+    rounded_price = floor(Price.last_amount / interval) * interval
+    number_of_lower_thresholds = Integer.floor_div(rounded_price, interval) - 1
+                                 |> List.wrap
+                                 |> Enum.concat([@max_number_of_thresholds_to_create])
+                                 |> Enum.min
 
-    amounts = Enum.map(0..number_of_lower_thresholds, fn n -> rounded_price - 10 * n end)
+    amounts = Enum.map(0..number_of_lower_thresholds, fn n -> rounded_price - interval * n end)
 
     create_thresholds(amounts, &Threshold.create_min_met/1)
   end

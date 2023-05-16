@@ -13,8 +13,8 @@ defmodule CoyneyeWeb.MinThresholdController do
     success_redirect(conn)
   end
 
-  def create(conn, %{}) do
-    ThresholdCreator.create_10s(direction: :min)
+  def create(conn, %{"amount" => interval}) do
+    ThresholdCreator.create_by(direction: :min, interval: String.to_integer(interval))
 
     success_redirect(conn)
   end
