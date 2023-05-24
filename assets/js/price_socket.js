@@ -59,8 +59,28 @@ socket.connect()
 let priceChannel = socket.channel("price:eth_usd", {})
 let priceContainer = document.querySelector("#price")
 
+// Debugging
+let openContainer = document.querySelector("#open-time")
+let lastContainer = document.querySelector("#last-update-time")
+let closeContainer = document.querySelector("#close-time")
+let errorContainer = document.querySelector("#error-time")
+
 priceChannel.on("new_price", payload => {
   priceContainer.innerText = payload.formatted_price
+  lastContainer.innerText = "Last price at " + currentTime()
+})
+
+// Debugging
+let currentTime = function() {
+  var today = new Date()
+  return today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
+}
+
+priceChannel.onClose(callback => {
+  closeContainer.innerText = "Close at: " + currentTime()
+})
+priceChannel.onError(callback => {
+  errorContainer.innerText = "Error at: " + currentTime()
 })
 
 let thresholdChannel = socket.channel("threshold:eth_usd", {})
@@ -78,7 +98,7 @@ thresholdChannel.on("min_threshold_met", payload => {
 })
 
 priceChannel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
+  .receive("ok", resp => { openContainer.innerText = "Open at " + currentTime(); console.log("Joined successfully", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
 thresholdChannel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
