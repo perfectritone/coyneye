@@ -6,7 +6,7 @@ import {Socket} from "phoenix"
 
 // And connect to the path in "lib/coyneye_web/endpoint.ex". We pass the
 // token for authentication. Read below how it should be used.
-let socket = new Socket("/socket", {params: {token: window.userToken}})
+let socket = new Socket("/socket", {timeout: 10000, params: {token: window.userToken}})
 
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
@@ -51,6 +51,23 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 //     end
 //
 // Finally, connect to the socket:
+let openSocketContainer = document.querySelector("#open-socket-time")
+let closeSocketContainer = document.querySelector("#close-socket-time")
+let errorSocketContainer = document.querySelector("#error-socket-time")
+let currentTime = function() {
+  var today = new Date()
+  return today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
+}
+
+socket.onOpen(callback => {
+  openSocketContainer.innerText = "Socket open at: " + currentTime()
+})
+socket.onClose(callback => {
+  closeSocketContainer.innerText = "Socket close at: " + currentTime()
+})
+socket.onError(callback => {
+  errorSocketContainer.innerText = "Socket error at: " + currentTime()
+})
 socket.connect()
 
 // Now that you are connected, you can join channels with a topic.
@@ -71,15 +88,10 @@ priceChannel.on("new_price", payload => {
 })
 
 // Debugging
-let currentTime = function() {
-  var today = new Date()
-  return today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
-}
-
 priceChannel.onClose(callback => {
   closeContainer.innerText = "Close at: " + currentTime()
 })
-priceChannel.onError(callback => {
+priceChannel.onError(function(error) {
   errorContainer.innerText = "Error at: " + currentTime()
 })
 
