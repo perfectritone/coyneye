@@ -6,7 +6,7 @@ import {Socket} from "phoenix"
 
 // And connect to the path in "lib/coyneye_web/endpoint.ex". We pass the
 // token for authentication. Read below how it should be used.
-let socket = new Socket("/socket", {timeout: 10000, params: {token: window.userToken}})
+let socket = new Socket("/socket", {timeout: 100000, heartbeatIntervalMs: 10000, params: {token: window.userToken}})
 
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
