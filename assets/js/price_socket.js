@@ -62,8 +62,9 @@ let currentTime = function() {
 
 const phxWindow = typeof window !== "undefined" ? window : null
 if(phxWindow && phxWindow.addEventListener){
-  phxWindow.addEventListener("pageshow", _e => {
-    pageshowContainer.innerText = "Page last shown at: " + currentTime
+  phxWindow.addEventListener("pageshow", event => {
+    let isPersisted = event.persisted ? "persisted" : "not persisted"
+    pageshowContainer.innerText = "Page last shown at: " + currentTime() + " and is " + isPersisted
   })
 }
 socket.onOpen(callback => {
