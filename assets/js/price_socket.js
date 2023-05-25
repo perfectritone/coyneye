@@ -63,13 +63,19 @@ let currentTime = function() {
 
 const phxWindow = typeof window !== "undefined" ? window : null
 if(phxWindow && phxWindow.addEventListener){
-  phxWindow.addEventListener("pageshow", event => {
-    let isPersisted = event.persisted ? "persisted" : "not persisted"
-    pageshowContainer.innerText = "Page last shown at: " + currentTime() + " and is " + isPersisted
-  })
-  phxWindow.addEventListener("pagehide", event => {
-    let isPersisted = event.persisted ? "persisted" : "not persisted"
-    pagehideContainer.innerText = "Page hidden at: " + currentTime() + " and is " + isPersisted
+  phxWindow.addEventListener("visibilitychange", event => {
+    //let isPersisted = event.persisted ? "persisted" : "not persisted"
+    switch (phxWindow.document.visibilityState) {
+      case 'hidden':
+        pagehideContainer.innerText = "Page hidden at: " + currentTime()
+        break
+      case 'visible':
+      pageshowContainer.innerText = "Page last shown at: " + currentTime()
+        break
+      default:
+      pageshowContainer.innerText = "weird page visibility"
+        break
+    }
   })
 }
 socket.onOpen(callback => {
