@@ -55,6 +55,7 @@ let openSocketContainer = document.querySelector("#open-socket-time")
 let closeSocketContainer = document.querySelector("#close-socket-time")
 let errorSocketContainer = document.querySelector("#error-socket-time")
 let pageshowContainer = document.querySelector("#page-show-time")
+let pagehideContainer = document.querySelector("#page-hide-time")
 let currentTime = function() {
   var today = new Date()
   return today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
@@ -65,6 +66,10 @@ if(phxWindow && phxWindow.addEventListener){
   phxWindow.addEventListener("pageshow", event => {
     let isPersisted = event.persisted ? "persisted" : "not persisted"
     pageshowContainer.innerText = "Page last shown at: " + currentTime() + " and is " + isPersisted
+  })
+  phxWindow.addEventListener("pagehide", event => {
+    let isPersisted = event.persisted ? "persisted" : "not persisted"
+    pagehideContainer.innerText = "Page hidden at: " + currentTime() + " and is " + isPersisted
   })
 }
 socket.onOpen(callback => {
