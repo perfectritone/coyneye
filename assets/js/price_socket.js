@@ -54,11 +54,18 @@ let socket = new Socket("/socket", {timeout: 100000, heartbeatIntervalMs: 10000,
 let openSocketContainer = document.querySelector("#open-socket-time")
 let closeSocketContainer = document.querySelector("#close-socket-time")
 let errorSocketContainer = document.querySelector("#error-socket-time")
+let pageshowContainer = document.querySelector("#page-show-time")
 let currentTime = function() {
   var today = new Date()
   return today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
 }
 
+const phxWindow = typeof window !== "undefined" ? window : null
+if(phxWindow && phxWindow.addEventListener){
+  phxWindow.addEventListener("pageshow", _e => {
+    pageshowContainer.innerText = "Page last shown at: " + currentTime
+  })
+}
 socket.onOpen(callback => {
   openSocketContainer.innerText = "Socket open at: " + currentTime()
 })
