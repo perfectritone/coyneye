@@ -62,22 +62,28 @@ let currentTime = function() {
 }
 
 const phxWindow = typeof window !== "undefined" ? window : null
+
+let awaitingConnectionOnPageShow = null
 if(phxWindow && phxWindow.addEventListener){
-  phxWindow.addEventListener("visibilitychange", event => {
-    //let isPersisted = event.persisted ? "persisted" : "not persisted"
-    switch (phxWindow.document.visibilityState) {
-      case 'hidden':
-        pagehideContainer.innerText = "Page hidden at: " + currentTime()
-        break
-      case 'visible':
-      pageshowContainer.innerText = "Page last shown at: " + currentTime()
-        break
-      default:
+  switch (phxWindow.document.visibilityState) {
+    case 'hidden':
+      if(socket.conn){
+        socket.disconnect()
+        awaitingConnectionOnPageShow = socket.connectClock
+      }
+      break
+    case 'visible':
+      if(awaitingConnectionOnPageShow === socket.connectClock){
+        awaitingConnectionOnPageShow = null
+        socket.connect()
+      }
+      break
+    default:
       pageshowContainer.innerText = "weird page visibility"
-        break
-    }
-  })
+      break
+  }
 }
+
 socket.onOpen(callback => {
   openSocketContainer.innerText = "Socket open at: " + currentTime()
 })
