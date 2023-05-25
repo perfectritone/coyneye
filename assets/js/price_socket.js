@@ -65,23 +65,11 @@ const phxWindow = typeof window !== "undefined" ? window : null
 
 let awaitingConnectionOnPageShow = null
 if(phxWindow && phxWindow.addEventListener){
-  switch (phxWindow.document.visibilityState) {
-    case 'hidden':
-      if(socket.conn){
-        socket.disconnect()
-        awaitingConnectionOnPageShow = socket.connectClock
-      }
-      break
-    case 'visible':
-      if(awaitingConnectionOnPageShow === socket.connectClock){
-        awaitingConnectionOnPageShow = null
-        socket.connect()
-      }
-      break
-    default:
-      pageshowContainer.innerText = "weird page visibility"
-      break
-  }
+  phxWindow.addEventListener("visibilitychange", event => {
+    if(phxWindow.document.visibilityState == 'visible') {
+      location.reload()
+    }
+  })
 }
 
 socket.onOpen(callback => {
