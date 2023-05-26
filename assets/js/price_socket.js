@@ -6,7 +6,7 @@ import {Socket} from "phoenix"
 
 // And connect to the path in "lib/coyneye_web/endpoint.ex". We pass the
 // token for authentication. Read below how it should be used.
-let socket = new Socket("/socket", {timeout: 100000, heartbeatIntervalMs: 10000, params: {token: window.userToken}})
+let socket = new Socket("/socket", {params: {token: window.userToken}})
 
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
@@ -51,36 +51,31 @@ let socket = new Socket("/socket", {timeout: 100000, heartbeatIntervalMs: 10000,
 //     end
 //
 // Finally, connect to the socket:
-let openSocketContainer = document.querySelector("#open-socket-time")
-let closeSocketContainer = document.querySelector("#close-socket-time")
-let errorSocketContainer = document.querySelector("#error-socket-time")
-let pageshowContainer = document.querySelector("#page-show-time")
-let pagehideContainer = document.querySelector("#page-hide-time")
-let currentTime = function() {
-  var today = new Date()
-  return today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
-}
 
+// Reload the page when it comes back into visibility.
+//
+// On mobile, websockets timeout after 60 seconds in firefox when the tab is
+// not in focus. This leads to the socket almost always being closed when
+// returning to the tab, with stale data. Phoenix attempts to remedy this
+// by listening to the 'pageshow' and 'pagehide' events and reconnecting to
+// the socket, but these events only really work properly on desktop browsers,
+// not mobile.
+//
+// Regardless, even with a reconnect, the data would still be stale since all
+// updates after disconnection will have been missed. A more complicated
+// approach would involve checking the socket connection, reconnecting if
+// necessary and requesting the relevant data. This is cleaner, but with
+// the current complexity of this page, a reload is cheaper and much easier.
 const phxWindow = typeof window !== "undefined" ? window : null
 
-let awaitingConnectionOnPageShow = null
 if(phxWindow && phxWindow.addEventListener){
-  phxWindow.addEventListener("visibilitychange", event => {
+  phxWindow.addEventListener("visibilitychange", _event => {
     if(phxWindow.document.visibilityState == 'visible') {
       location.reload()
     }
   })
 }
 
-socket.onOpen(callback => {
-  openSocketContainer.innerText = "Socket open at: " + currentTime()
-})
-socket.onClose(callback => {
-  closeSocketContainer.innerText = "Socket close at: " + currentTime()
-})
-socket.onError(callback => {
-  errorSocketContainer.innerText = "Socket error at: " + currentTime()
-})
 socket.connect()
 
 // Now that you are connected, you can join channels with a topic.
@@ -89,23 +84,8 @@ socket.connect()
 let priceChannel = socket.channel("price:eth_usd", {})
 let priceContainer = document.querySelector("#price")
 
-// Debugging
-let openContainer = document.querySelector("#open-time")
-let lastContainer = document.querySelector("#last-update-time")
-let closeContainer = document.querySelector("#close-time")
-let errorContainer = document.querySelector("#error-time")
-
 priceChannel.on("new_price", payload => {
   priceContainer.innerText = payload.formatted_price
-  lastContainer.innerText = "Last price at " + currentTime()
-})
-
-// Debugging
-priceChannel.onClose(callback => {
-  closeContainer.innerText = "Close at: " + currentTime()
-})
-priceChannel.onError(function(error) {
-  errorContainer.innerText = "Error at: " + currentTime()
 })
 
 let thresholdChannel = socket.channel("threshold:eth_usd", {})
@@ -123,7 +103,7 @@ thresholdChannel.on("min_threshold_met", payload => {
 })
 
 priceChannel.join()
-  .receive("ok", resp => { openContainer.innerText = "Open at " + currentTime(); console.log("Joined successfully", resp) })
+  .receive("ok", resp => { console.log("Joined successfully", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
 thresholdChannel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
