@@ -20,6 +20,8 @@ config :coyneye, CoyneyeWeb.Endpoint,
   pubsub_server: Coyneye.PubSub,
   live_view: [signing_salt: "btJc6uLS"]
 
+config :coyneye, :price_store, Coyneye.Price
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
