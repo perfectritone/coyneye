@@ -13,10 +13,7 @@ config :coyneye,
 # Configures the endpoint
 config :coyneye, CoyneyeWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [
-    formats: [html: CoyneyeWeb.ErrorHTML, json: CoyneyeWeb.ErrorJSON],
-    layout: false
-  ],
+  debug_errors: true,
   pubsub_server: Coyneye.PubSub,
   live_view: [signing_salt: "btJc6uLS"]
 

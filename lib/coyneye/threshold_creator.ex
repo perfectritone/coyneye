@@ -8,13 +8,13 @@ defmodule Coyneye.ThresholdCreator do
   def create(amounts, condition: :exceeded, direction: :max) do
     create_thresholds(amounts, &Threshold.create_max_exceeded/1)
   end
-  def create(amounts, direction: :max) do
+  def create(amounts, condition: :met, direction: :max) do
     create_thresholds(amounts, &Threshold.create_max_met/1)
   end
   def create(amounts, condition: :exceeded, direction: :min) do
     create_thresholds(amounts, &Threshold.create_min_exceeded/1)
   end
-  def create(amounts, direction: :min) do
+  def create(amounts, condition: :met, direction: :min) do
     create_thresholds(amounts, &Threshold.create_min_met/1)
   end
 

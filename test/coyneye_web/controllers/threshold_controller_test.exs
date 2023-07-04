@@ -1,5 +1,6 @@
 defmodule CoyneyeWeb.ThresholdController do
   use CoyneyeWeb.ConnCase
+  import Coyneye.Factory
 
   @threshold_1 "1258"
   @threshold_2 "1300"
@@ -8,13 +9,22 @@ defmodule CoyneyeWeb.ThresholdController do
   @multiple_thresholds Enum.join(@threshold_list, " ")
   # @invalid_amount "abc"
 
+  setup do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Coyneye.Repo)
+
+    currency = insert!(:currency)
+    insert!(:price, currency: currency)
+
+    :ok
+  end
+
   describe "create max threshold" do
     test "redirects back to index when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.max_threshold_path(conn, :create), build_attrs())
+      conn = post(conn, ~p"/max_thresholds", build_attrs())
 
-      assert redirected_to(conn) == Routes.price_path(conn, :index)
+      assert redirected_to(conn) == ~p"/prices"
 
-      conn = get(conn, Routes.price_path(conn, :index))
+      conn = get(conn, ~p"/prices")
       assert html_response(conn, 200) =~ @threshold_1
     end
 
@@ -24,11 +34,11 @@ defmodule CoyneyeWeb.ThresholdController do
 
     test "redirects back to index when multiple thresholds are sent", %{conn: conn} do
       attrs = build_attrs(%{amount: @multiple_thresholds})
-      conn = post(conn, Routes.max_threshold_path(conn, :create), attrs)
+      conn = post(conn, ~p"/max_thresholds", attrs)
 
-      assert redirected_to(conn) == Routes.price_path(conn, :index)
+      assert redirected_to(conn) == ~p"/prices"
 
-      conn = get(conn, Routes.price_path(conn, :index))
+      conn = get(conn, ~p"/prices")
       lowest_threshold = Enum.min(@threshold_list)
       assert html_response(conn, 200) =~ lowest_threshold
     end
