@@ -7,9 +7,9 @@ defmodule Coyneye.ThresholdInterval do
   def amounts(direction: :max, interval: interval) do
     rounded_price = ceil(price_store().last_amount / interval) * interval
 
-    Enum.map(
-      0..@max_number_of_thresholds_to_create,
-      fn n -> rounded_price + interval * n end)
+    for n <- 0..@max_number_of_thresholds_to_create do
+      rounded_price + interval * n
+    end
   end
   def amounts(direction: :min, interval: interval) do
     rounded_price = floor(price_store().last_amount / interval) * interval
@@ -18,7 +18,9 @@ defmodule Coyneye.ThresholdInterval do
                                  |> Enum.concat([@max_number_of_thresholds_to_create])
                                  |> Enum.min
 
-    Enum.map(0..number_of_lower_thresholds, fn n -> rounded_price - interval * n end)
+    for n <- 0..number_of_lower_thresholds do
+      rounded_price - interval * n
+    end
   end
 
   defp price_store, do: Application.get_env(:coyneye, :price_store)
