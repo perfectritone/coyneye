@@ -17,7 +17,7 @@ defmodule CoyneyeWeb.MaxThresholdController do
 
   def create(conn, %{"amount" => interval}) do
     ThresholdInterval.amounts(direction: :max, interval: String.to_integer(interval))
-    |> ThresholdCreator.create(direction: :max)
+    |> ThresholdCreator.create(condition: :met, direction: :max)
 
     success_redirect(conn)
   end

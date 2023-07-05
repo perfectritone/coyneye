@@ -17,7 +17,7 @@ defmodule CoyneyeWeb.MinThresholdController do
 
   def create(conn, %{"amount" => interval}) do
     ThresholdInterval.amounts(direction: :min, interval: String.to_integer(interval))
-    |> ThresholdCreator.create(direction: :min)
+    |> ThresholdCreator.create(condition: :met, direction: :min)
 
     success_redirect(conn)
   end
