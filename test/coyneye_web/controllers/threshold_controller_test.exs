@@ -1,6 +1,7 @@
 defmodule CoyneyeWeb.ThresholdController do
   use CoyneyeWeb.ConnCase
   import Coyneye.Factory
+  import Mox
 
   @threshold_1 "1258"
   @threshold_2 "1300"
@@ -43,6 +44,20 @@ defmodule CoyneyeWeb.ThresholdController do
       assert html_response(conn, 200) =~ lowest_threshold
     end
 
+    test "redirects back to index when interval thresholds are sent", %{conn: conn} do
+      expect(PriceMock, :last_amount, fn -> 302 end)
+
+      interval_amount = 10.0
+      interval_amount_as_string = :erlang.float_to_binary(interval_amount, [decimals: 0])
+      attrs = %{amount: interval_amount_as_string}
+      conn = post(conn, ~p"/max_thresholds/interval", attrs)
+
+      assert redirected_to(conn) == ~p"/prices"
+
+      conn = get(conn, ~p"/prices")
+      lowest_threshold = "310.00"
+      assert html_response(conn, 200) =~ lowest_threshold
+    end
   end
 
   defp build_attrs(), do: build_attrs(%{amount: @threshold_1})
