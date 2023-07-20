@@ -10,5 +10,9 @@ defmodule Coyneye.Currency do
     Coyneye.Model.Currency |> Repo.get_by!(name: name)
   end
 
+  def default_record_id do
+    record("ETH/USD").id
+  end
+
   def default_pair, do: @default_currency_pair
 end

@@ -3,7 +3,7 @@ defmodule Coyneye.Threshold do
 
   alias Ecto.Query
   alias Coyneye.Model.{MaxThreshold, MinThreshold}
-  alias Coyneye.{DatabaseCache, Repo}
+  alias Coyneye.{Currency, DatabaseCache, Repo}
 
   @moduledoc """
   Threshold helper
@@ -48,14 +48,25 @@ defmodule Coyneye.Threshold do
   end
 
   def create_max(%{amount: amount, condition: condition}) do
-    result =
-      %MaxThreshold{}
-      |> MaxThreshold.changeset(%{"amount" => amount, "condition" => condition})
-      |> Repo.insert()
+    Repo.get_by(MaxThreshold, amount: amount)
+    |> insert_max_threshold_unless_exists(amount, condition)
+  end
 
-    new_max()
+  def insert_max_threshold_unless_exists(_record = %MaxThreshold{}, _amount, _condition), do: nil
+  def insert_max_threshold_unless_exists(nil, amount, condition) do
+    max_threshold =
+      MaxThreshold.changeset(
+        %MaxThreshold{},
+        %{
+          "amount" => amount,
+          "condition" => condition,
+          "currency_id" => Currency.default_record_id()
+        })
+      |> Repo.insert!()
 
-    result
+    update_cache(:max_threshold)
+
+    max_threshold
   end
 
   def create_min_met(%{amount: amount}) do
@@ -67,20 +78,31 @@ defmodule Coyneye.Threshold do
   end
 
   def create_min(%{amount: amount, condition: condition}) do
-    result =
-      %MinThreshold{}
-      |> MinThreshold.changeset(%{"amount" => amount, "condition" => condition})
-      |> Repo.insert()
+    Repo.get_by(MinThreshold, amount: amount)
+    |> insert_min_threshold_unless_exists(amount, condition)
+  end
 
-    new_min()
+  def insert_min_threshold_unless_exists(_record = %MinThreshold{}, _amount, _condition), do: nil
+  def insert_min_threshold_unless_exists(nil, amount, condition) do
+    min_threshold =
+      MinThreshold.changeset(
+        %MinThreshold{},
+        %{
+          "amount" => amount,
+          "condition" => condition,
+          "currency_id" => Currency.default_record_id()
+        })
+      |> Repo.insert!()
 
-    result
+    update_cache(:min_threshold)
+
+    min_threshold
   end
 
   def delete_all_max() do
     result = Repo.delete_all(MaxThreshold)
 
-    new_max()
+    update_cache(:max_threshold)
 
     result
   end
@@ -88,14 +110,13 @@ defmodule Coyneye.Threshold do
   def delete_all_min() do
     result = Repo.delete_all(MinThreshold)
 
-    new_min()
+    update_cache(:min_threshold)
 
     result
   end
 
   def check_thresholds(price) do
     max_threshold_records_updated = check_max_threshold(price, cached_max())
-
     min_threshold_records_updated = check_min_threshold(price, cached_min())
 
     results = %{
@@ -103,7 +124,8 @@ defmodule Coyneye.Threshold do
       min_threshold_met: min_threshold_records_updated != 0
     }
 
-    update_cache(results)
+    if results.max_threshold_met, do: update_cache(:max_threshold)
+    if results.min_threshold_met, do: update_cache(:min_threshold)
 
     results
   end
@@ -183,22 +205,12 @@ defmodule Coyneye.Threshold do
     threshold_values
   end
 
-  defp update_cache(%{max_threshold_met: true}) do
-    new_max()
-  end
-
-  defp update_cache(%{min_threshold_met: true}) do
-    new_min()
-  end
-
-  defp update_cache(%{}), do: nil
-
-  defp new_max do
+  defp update_cache(:max_threshold) do
     DatabaseCache.put(:minimum_unmet_maximum_threshold, minimum_unmet_maximum())
     Coyneye.MaxThreshold.notify_subscribers({:ok, cached_max()})
   end
 
-  defp new_min do
+  defp update_cache(:min_threshold) do
     DatabaseCache.put(:maximum_unmet_minimum_threshold, maximum_unmet_minimum())
     Coyneye.MinThreshold.notify_subscribers({:ok, cached_min()})
   end
