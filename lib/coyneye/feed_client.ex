@@ -52,7 +52,10 @@ defmodule Coyneye.FeedClient do
   end
 
   def handle_frame({:text, msg}, state) do
-    handle_msg(Poison.decode!(msg), state)
+    Poison.decode!(msg)
+    |> handle_msg(state)
+
+    {:ok, state}
   end
 
   def handle_msg(%{"event" => "heartbeat"}, state), do: {:ok, state}

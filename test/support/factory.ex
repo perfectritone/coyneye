@@ -1,6 +1,10 @@
 defmodule Coyneye.Factory do
   alias Coyneye.Repo
 
+  @moduledoc """
+  Factories to allow tests to build default data in the DB
+  """
+
   # Factories
 
   def build(:currency) do

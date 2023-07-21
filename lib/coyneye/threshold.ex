@@ -52,7 +52,7 @@ defmodule Coyneye.Threshold do
     |> insert_max_threshold_unless_exists(amount, condition)
   end
 
-  def insert_max_threshold_unless_exists(_record = %MaxThreshold{}, _amount, _condition), do: nil
+  def insert_max_threshold_unless_exists(%MaxThreshold{} = _record, _amount, _condition), do: nil
   def insert_max_threshold_unless_exists(nil, amount, condition) do
     max_threshold =
       MaxThreshold.changeset(
@@ -82,7 +82,7 @@ defmodule Coyneye.Threshold do
     |> insert_min_threshold_unless_exists(amount, condition)
   end
 
-  def insert_min_threshold_unless_exists(_record = %MinThreshold{}, _amount, _condition), do: nil
+  def insert_min_threshold_unless_exists(%MinThreshold{} = _record, _amount, _condition), do: nil
   def insert_min_threshold_unless_exists(nil, amount, condition) do
     min_threshold =
       MinThreshold.changeset(
