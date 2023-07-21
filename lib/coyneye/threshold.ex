@@ -148,6 +148,15 @@ defmodule Coyneye.Threshold do
     end
   end
 
+  def notified(:max_threshold) do
+    Query.from(MaxThreshold, where: [met: true])
+    |> Repo.delete_all
+  end
+  def notified(:min_threshold) do
+    Query.from(MinThreshold, where: [met: true])
+    |> Repo.delete_all
+  end
+
   defp price_meets_max_threshold_condition(price, threshold_amount, :met) do
     price >= threshold_amount
   end

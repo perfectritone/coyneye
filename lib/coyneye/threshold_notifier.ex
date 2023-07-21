@@ -9,6 +9,7 @@ defmodule Coyneye.ThresholdNotifier do
     Threshold.check_thresholds(price)
     |> handle_pushover_notifications(price)
     |> broadcast_threshold_update
+    |> set_threshold_success
   end
 
   def handle_pushover_notifications(%{} = thresholds_met, price) do
@@ -43,6 +44,8 @@ defmodule Coyneye.ThresholdNotifier do
         new_max_threshold: formatted_threshold(Threshold.cached_max_amount),
         currency_pair: currency_pair
       })
+
+    %{max_threshold_met: true}
   end
 
   defp broadcast_threshold_update(%{min_threshold_met: true}) do
@@ -53,9 +56,19 @@ defmodule Coyneye.ThresholdNotifier do
         new_min_threshold: formatted_threshold(Threshold.cached_min_amount),
         currency_pair: currency_pair
       })
+
+    %{min_threshold_met: true}
   end
 
   defp broadcast_threshold_update(%{}), do: nil
+
+  defp set_threshold_success(%{max_threshold_met: true}) do
+    Threshold.notified(:max_threshold)
+  end
+  defp set_threshold_success(%{min_threshold_met: true}) do
+    Threshold.notified(:min_threshold)
+  end
+  defp set_threshold_success(%{}), do: nil
 
   defp formatted_threshold(threshold_amount), do: PriceFormatter.call(threshold_amount)
 end
