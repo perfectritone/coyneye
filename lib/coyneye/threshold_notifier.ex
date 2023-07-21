@@ -60,7 +60,7 @@ defmodule Coyneye.ThresholdNotifier do
     %{min_threshold_met: true}
   end
 
-  defp broadcast_threshold_update(%{}), do: nil
+  defp broadcast_threshold_update(%{}), do: %{}
 
   defp set_threshold_success(%{max_threshold_met: true}) do
     Threshold.notified(:max_threshold)
