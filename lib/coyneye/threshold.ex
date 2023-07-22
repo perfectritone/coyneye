@@ -15,10 +15,36 @@ defmodule Coyneye.Threshold do
     |> threshold
   end
 
+  def minimum_unmet_maximums do
+    Repo.all(Query.from(
+      mt in MaxThreshold,
+      where: [met: false],
+      group_by: :user_id,
+      select: [
+        mt.user_id,
+        min(mt.amount)
+      ]
+    ))
+    |> Map.new(fn [k, v] -> {k, v} end)
+  end
+
   def maximum_unmet_minimum do
     Query.from(MinThreshold, where: [met: false], order_by: [desc: :amount], limit: 1)
     |> Repo.one()
     |> threshold
+  end
+
+  def maximum_unmet_minimums do
+    Repo.all(Query.from(
+      mt in MinThreshold,
+      where: [met: false],
+      group_by: :user_id,
+      select: [
+        mt.user_id,
+        max(mt.amount)
+      ]
+    ))
+    |> Map.new(fn [k, v] -> {k, v} end)
   end
 
   def minimum_unmet_maximum_amount do
@@ -39,28 +65,29 @@ defmodule Coyneye.Threshold do
     MinThreshold.changeset(%MinThreshold{}, %{})
   end
 
-  def create_max_met(%{amount: amount}) do
-    create_max(%{amount: amount, condition: :met})
+  def create_max_met(%{user: user, amount: amount}) do
+    create_max(%{user: user, amount: amount, condition: :met})
   end
 
-  def create_max_exceeded(%{amount: amount}) do
-    create_max(%{amount: amount, condition: :exceeded})
+  def create_max_exceeded(%{user: user, amount: amount}) do
+    create_max(%{user: user, amount: amount, condition: :exceeded})
   end
 
-  def create_max(%{amount: amount, condition: condition}) do
-    Repo.get_by(MaxThreshold, amount: amount)
-    |> insert_max_threshold_unless_exists(amount, condition)
+  def create_max(%{user: user, amount: amount, condition: condition}) do
+    Repo.get_by(MaxThreshold, user_id: user.id, amount: amount)
+    |> insert_max_threshold_unless_exists(user, amount, condition)
   end
 
-  def insert_max_threshold_unless_exists(%MaxThreshold{} = _record, _amount, _condition), do: nil
-  def insert_max_threshold_unless_exists(nil, amount, condition) do
+  def insert_max_threshold_unless_exists(%MaxThreshold{} = _record, _user, _amount, _condition), do: nil
+  def insert_max_threshold_unless_exists(nil, user, amount, condition) do
     max_threshold =
       MaxThreshold.changeset(
         %MaxThreshold{},
         %{
           "amount" => amount,
           "condition" => condition,
-          "currency_id" => Currency.default_record_id()
+          "currency_id" => Currency.default_record_id(),
+          "user_id" => user.id
         })
       |> Repo.insert!()
 
@@ -69,28 +96,29 @@ defmodule Coyneye.Threshold do
     max_threshold
   end
 
-  def create_min_met(%{amount: amount}) do
-    create_min(%{amount: amount, condition: :met})
+  def create_min_met(%{user: user, amount: amount}) do
+    create_min(%{user: user, amount: amount, condition: :met})
   end
 
-  def create_min_exceeded(%{amount: amount}) do
-    create_min(%{amount: amount, condition: :exceeded})
+  def create_min_exceeded(%{user: user, amount: amount}) do
+    create_min(%{user: user, amount: amount, condition: :exceeded})
   end
 
-  def create_min(%{amount: amount, condition: condition}) do
-    Repo.get_by(MinThreshold, amount: amount)
-    |> insert_min_threshold_unless_exists(amount, condition)
+  def create_min(%{user: user, amount: amount, condition: condition}) do
+    Repo.get_by(MinThreshold, user_id: user.id, amount: amount)
+    |> insert_min_threshold_unless_exists(user, amount, condition)
   end
 
-  def insert_min_threshold_unless_exists(%MinThreshold{} = _record, _amount, _condition), do: nil
-  def insert_min_threshold_unless_exists(nil, amount, condition) do
+  def insert_min_threshold_unless_exists(%MinThreshold{} = _record, _user, _amount, _condition), do: nil
+  def insert_min_threshold_unless_exists(nil, user, amount, condition) do
     min_threshold =
       MinThreshold.changeset(
         %MinThreshold{},
         %{
           "amount" => amount,
           "condition" => condition,
-          "currency_id" => Currency.default_record_id()
+          "currency_id" => Currency.default_record_id(),
+          "user_id" => user.id
         })
       |> Repo.insert!()
 
@@ -116,6 +144,7 @@ defmodule Coyneye.Threshold do
   end
 
   def check_thresholds(price) do
+    # find all thresholds that have been met, update to met, map with user as key
     max_threshold_records_updated = check_max_threshold(price, cached_max())
     min_threshold_records_updated = check_min_threshold(price, cached_min())
 
@@ -209,27 +238,35 @@ defmodule Coyneye.Threshold do
 
   #defp threshold(query_result) when query_result in [%MaxThreshold{}, %MinThreshold{}] do
   defp threshold(query_result) do
-    {threshold_values, _} = Map.split(query_result, [:amount, :condition])
+    {threshold_values, _} = Map.split(query_result, [:amount, :condition, :user_id])
 
     threshold_values
   end
 
   defp update_cache(:max_threshold) do
-    DatabaseCache.put(:minimum_unmet_maximum_threshold, minimum_unmet_maximum())
+    DatabaseCache.put(:minimum_unmet_maximum_threshold, minimum_unmet_maximums())
     Coyneye.MaxThreshold.notify_subscribers({:ok, cached_max()})
   end
 
   defp update_cache(:min_threshold) do
-    DatabaseCache.put(:maximum_unmet_minimum_threshold, maximum_unmet_minimum())
+    DatabaseCache.put(:maximum_unmet_minimum_threshold, maximum_unmet_minimums())
     Coyneye.MinThreshold.notify_subscribers({:ok, cached_min()})
   end
 
   def cached_max do
-    DatabaseCache.get(:minimum_unmet_maximum_threshold, &minimum_unmet_maximum/0)
+    DatabaseCache.get(:minimum_unmet_maximum_threshold, &minimum_unmet_maximums/0)
   end
 
   def cached_min do
-    DatabaseCache.get(:maximum_unmet_minimum_threshold, &maximum_unmet_minimum/0)
+    DatabaseCache.get(:maximum_unmet_minimum_threshold, &maximum_unmet_minimums/0)
+  end
+
+  def cached_max_for_user(user_id) do
+    cached_max()[user_id]
+  end
+
+  def cached_min_for_user(user_id) do
+    cached_min()[user_id]
   end
 
   def cached_max_amount, do: cached_max() |> cached_max_amount_helper

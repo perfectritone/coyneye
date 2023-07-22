@@ -4,20 +4,20 @@ defmodule CoyneyeWeb.MinThresholdController do
 
   def create(conn, %{"met" => _, "min_threshold" => %{"amount" => amounts}}) do
     ThresholdParser.parse_amounts(amounts)
-    |> ThresholdCreator.create(condition: :met, direction: :min)
+    |> ThresholdCreator.create(conn.assigns.current_user, condition: :met, direction: :min)
 
     success_redirect(conn)
   end
   def create(conn, %{"exceeded" => _, "min_threshold" => %{"amount" => amounts}}) do
     ThresholdParser.parse_amounts(amounts)
-    |> ThresholdCreator.create(condition: :exceeded, direction: :min)
+    |> ThresholdCreator.create(conn.assigns.current_user, condition: :exceeded, direction: :min)
 
     success_redirect(conn)
   end
 
   def create(conn, %{"amount" => interval}) do
     ThresholdInterval.amounts(direction: :min, interval: String.to_integer(interval))
-    |> ThresholdCreator.create(condition: :met, direction: :min)
+    |> ThresholdCreator.create(conn.assigns.current_user, condition: :met, direction: :min)
 
     success_redirect(conn)
   end

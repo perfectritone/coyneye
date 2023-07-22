@@ -3,35 +3,37 @@
     <%= @formatted_last_price %>
   </div>
 
-  <div class='threshold-forms'>
-    <%= Phoenix.HTML.Form.form_for @max_threshold_changeset, ~p"/max_thresholds", fn f -> %>
-      <%= Phoenix.HTML.Form.text_input f, :amount %>
-      <%= Phoenix.HTML.Form.submit "↑", name: "met" %>
-      <%= Phoenix.HTML.Form.submit "↑↑", name: "exceeded" %>
-      <%= Phoenix.HTML.Link.button("10s", to: "max_thresholds/interval?amount=10", method: :post, class: "btn") %>
-      <%= Phoenix.HTML.Link.button("5s", to: "max_thresholds/interval?amount=5", method: :post, class: "btn") %>
-      <%= Phoenix.HTML.Link.button("x", to: "max_thresholds/", method: :delete, class: "btn") %>
-    <% end %>
+  <%= if @current_user do %>
+    <div class='threshold-forms'>
+      <%= Phoenix.HTML.Form.form_for @max_threshold_changeset, ~p"/max_thresholds", fn f -> %>
+        <%= Phoenix.HTML.Form.text_input f, :amount %>
+        <%= Phoenix.HTML.Form.submit "↑", name: "met" %>
+        <%= Phoenix.HTML.Form.submit "↑↑", name: "exceeded" %>
+        <%= Phoenix.HTML.Link.button("10s", to: "max_thresholds/interval?amount=10", method: :post, class: "btn") %>
+        <%= Phoenix.HTML.Link.button("5s", to: "max_thresholds/interval?amount=5", method: :post, class: "btn") %>
+        <%= Phoenix.HTML.Link.button("x", to: "max_thresholds/", method: :delete, class: "btn") %>
+      <% end %>
 
-    <div id='max-threshold-amount'>
-      (<%= @formatted_last_max_threshold_amount %>)
+      <div id='max-threshold-amount'>
+        (<%= @formatted_last_max_threshold_amount %>)
+      </div>
+
+      <%= Phoenix.HTML.Form.form_for @min_threshold_changeset, ~p"/min_thresholds", fn f -> %>
+        <%= Phoenix.HTML.Form.text_input f, :amount %>
+        <%= Phoenix.HTML.Form.submit "↓", name: "met" %>
+        <%= Phoenix.HTML.Form.submit "↓↓", name: "exceeded" %>
+        <%= Phoenix.HTML.Link.button("10s", to: "min_thresholds/interval?amount=10", method: :post, class: "btn") %>
+        <%= Phoenix.HTML.Link.button("5s", to: "min_thresholds/interval?amount=5", method: :post, class: "btn") %>
+        <%= Phoenix.HTML.Link.button("x", to: "min_thresholds/", method: :delete, class: "btn") %>
+      <% end %>
+
+      <div id='min-threshold-amount'>
+        (<%= @formatted_last_min_threshold_amount %>)
+      </div>
     </div>
 
-    <%= Phoenix.HTML.Form.form_for @min_threshold_changeset, ~p"/min_thresholds", fn f -> %>
-      <%= Phoenix.HTML.Form.text_input f, :amount %>
-      <%= Phoenix.HTML.Form.submit "↓", name: "met" %>
-      <%= Phoenix.HTML.Form.submit "↓↓", name: "exceeded" %>
-      <%= Phoenix.HTML.Link.button("10s", to: "min_thresholds/interval?amount=10", method: :post, class: "btn") %>
-      <%= Phoenix.HTML.Link.button("5s", to: "min_thresholds/interval?amount=5", method: :post, class: "btn") %>
-      <%= Phoenix.HTML.Link.button("x", to: "min_thresholds/", method: :delete, class: "btn") %>
-    <% end %>
-
-    <div id='min-threshold-amount'>
-      (<%= @formatted_last_min_threshold_amount %>)
-    </div>
-  </div>
-
-  <p class='note' hidden='true'>
-    Set thresholds to automatically update based on the custom price increment provided
-  </p>
+    <p class='note' hidden='true'>
+      Set thresholds to automatically update based on the custom price increment provided
+    </p>
+  <% end %>
 </div>
