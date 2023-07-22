@@ -25,3 +25,5 @@ config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :coyneye, Coyneye.Mailer, adapter: Swoosh.Adapters.Test

@@ -52,7 +52,8 @@ defmodule Coyneye.MixProject do
       {:poison, "~> 4.0"},
       {:httpoison, "~> 1.6.1"},
       {:credo, "~> 1.7"},
-      {:mox, "~> 0.5.2", only: :test}
+      {:mox, "~> 0.5.2", only: :test},
+      {:swoosh, "~> 1.4"}
     ]
   end
 
