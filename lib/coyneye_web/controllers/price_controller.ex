@@ -28,8 +28,8 @@ defmodule CoyneyeWeb.PriceController do
     user_id = current_user.id
 
     %{
-      formatted_last_min_threshold_amount: PriceFormatter.call(Threshold.cached_min_for_user(user_id)),
-      formatted_last_max_threshold_amount: PriceFormatter.call(Threshold.cached_max_for_user(user_id)),
+      formatted_last_min_threshold_amount: PriceFormatter.call(Threshold.cached_min_amount_for_user(user_id)),
+      formatted_last_max_threshold_amount: PriceFormatter.call(Threshold.cached_max_amount_for_user(user_id)),
       min_threshold_changeset: min_threshold_changeset(),
       max_threshold_changeset: max_threshold_changeset()
     }

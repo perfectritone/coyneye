@@ -16,16 +16,30 @@ defmodule Coyneye.Threshold do
   end
 
   def minimum_unmet_maximums do
-    Repo.all(Query.from(
-      mt in MaxThreshold,
+    user_minimum_maximum_thresholds = Query.from(
+      ummt in MaxThreshold,
       where: [met: false],
       group_by: :user_id,
+      select: %{
+        user_id: ummt.user_id,
+        min_user_amount: min(ummt.amount)
+      }
+    )
+
+    Repo.all(Query.from(
+      mt in MaxThreshold,
+      join: ummt in subquery(user_minimum_maximum_thresholds),
+      on: [
+        user_id: mt.user_id,
+        min_user_amount: mt.amount
+      ],
       select: [
         mt.user_id,
-        min(mt.amount)
+        mt.amount,
+        mt.condition
       ]
     ))
-    |> Map.new(fn [k, v] -> {k, v} end)
+    |> user_closest_threshold_list_to_map
   end
 
   def maximum_unmet_minimum do
@@ -35,16 +49,35 @@ defmodule Coyneye.Threshold do
   end
 
   def maximum_unmet_minimums do
-    Repo.all(Query.from(
-      mt in MinThreshold,
+    user_maximum_minimum_thresholds = Query.from(
+      ummt in MinThreshold,
       where: [met: false],
       group_by: :user_id,
+      select: %{
+        user_id: ummt.user_id,
+        max_user_amount: max(ummt.amount)
+      }
+    )
+
+    Repo.all(Query.from(
+      mt in MinThreshold,
+      join: ummt in subquery(user_maximum_minimum_thresholds),
+      on: [
+        user_id: mt.user_id,
+        max_user_amount: mt.amount
+      ],
       select: [
         mt.user_id,
-        max(mt.amount)
+        mt.amount,
+        mt.condition
       ]
     ))
-    |> Map.new(fn [k, v] -> {k, v} end)
+    |> user_closest_threshold_list_to_map
+  end
+
+  defp user_closest_threshold_list_to_map(list) do
+    list
+    |> Map.new(fn [k | v] -> {k, %{amount: Enum.at(v, 0), condition: Enum.at(v, 1)}} end)
   end
 
   def minimum_unmet_maximum_amount do
@@ -261,12 +294,14 @@ defmodule Coyneye.Threshold do
     DatabaseCache.get(:maximum_unmet_minimum_threshold, &maximum_unmet_minimums/0)
   end
 
-  def cached_max_for_user(user_id) do
+  def cached_max_amount_for_user(user_id) do
     cached_max()[user_id]
+    |> cached_max_amount_helper
   end
 
-  def cached_min_for_user(user_id) do
+  def cached_min_amount_for_user(user_id) do
     cached_min()[user_id]
+    |> cached_min_amount_helper
   end
 
   def cached_max_amount, do: cached_max() |> cached_max_amount_helper
