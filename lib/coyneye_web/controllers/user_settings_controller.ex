@@ -4,7 +4,7 @@ defmodule CoyneyeWeb.UserSettingsController do
   alias Coyneye.Accounts
   alias CoyneyeWeb.UserAuth
 
-  plug :assign_email_and_password_changesets
+  plug :assign_user_changesets
 
   def edit(conn, _params) do
     render(conn, :edit)
@@ -50,6 +50,21 @@ defmodule CoyneyeWeb.UserSettingsController do
     end
   end
 
+  def update(conn, %{"action" => "update_pushover_authentication"} = params) do
+    %{"current_password" => password, "user" => user_params} = params
+    user = conn.assigns.current_user
+
+    case Accounts.update_user_pushover_authentication(user, password, user_params) do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "Pushover authentication updated successfully.")
+        |> redirect(to: ~p"/users/settings")
+
+      {:error, changeset} ->
+        render(conn, :edit, pushover_authentication_changeset: changeset)
+    end
+  end
+
   def confirm_email(conn, %{"token" => token}) do
     case Accounts.update_user_email(conn.assigns.current_user, token) do
       :ok ->
@@ -64,11 +79,12 @@ defmodule CoyneyeWeb.UserSettingsController do
     end
   end
 
-  defp assign_email_and_password_changesets(conn, _opts) do
+  defp assign_user_changesets(conn, _opts) do
     user = conn.assigns.current_user
 
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
+    |> assign(:pushover_authentication_changeset, Accounts.change_user_pushover_authentication(user))
   end
 end

@@ -8,25 +8,17 @@ defmodule Coyneye.PushoverService do
   @url "https://api.pushover.net/1/messages.json"
   @headers [{"Content-Type", "application/json"}]
 
-  def notify(message) do
-    HTTPoison.post(@url, body(message), @headers)
+  def notify(message, %{pushover_user: pushover_user, pushover_token: pushover_token}) do
+    HTTPoison.post(@url, body(message, pushover_user, pushover_token), @headers)
   end
 
-  def body(message) do
+  def body(message, pushover_user, pushover_token) do
     Poison.encode!(%{
-      token: token(),
-      user: user(),
+      token: pushover_token,
+      user: pushover_user,
       message: message,
       sound: sound(message)
     })
-  end
-
-  defp token do
-    System.fetch_env!("PUSHOVER_TOKEN")
-  end
-
-  defp user do
-    System.fetch_env!("PUSHOVER_USER")
   end
 
   defp sound(message) do

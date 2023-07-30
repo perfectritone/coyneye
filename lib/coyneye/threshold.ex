@@ -176,38 +176,51 @@ defmodule Coyneye.Threshold do
     result
   end
 
+  # update name to users_with_met_thresholds and split out updating the DB to another function
   def check_thresholds(price) do
-    # find all thresholds that have been met, update to met, map with user as key
-    max_threshold_records_updated = check_max_threshold(price, cached_max())
-    min_threshold_records_updated = check_min_threshold(price, cached_min())
-
-    results = %{
-      max_threshold_met: max_threshold_records_updated != 0,
-      min_threshold_met: min_threshold_records_updated != 0
+    %{
+      users_with_max_threshold_conditions_met: check_max_thresholds(price),
+      users_with_min_threshold_conditions_met: check_min_thresholds(price)
     }
-
-    if results.max_threshold_met, do: update_cache(:max_threshold)
-    if results.min_threshold_met, do: update_cache(:min_threshold)
-
-    results
+    |> tap(fn results ->
+      if results.users_with_max_threshold_conditions_met, do: update_cache(:max_threshold)
+      if results.users_with_min_threshold_conditions_met, do: update_cache(:min_threshold)
+    end)
   end
 
-  def check_max_threshold(_price, nil), do: 0
-  def check_max_threshold(price, max_threshold) do
-    {%{amount: threshold_amount, condition: condition}, _} = max_threshold
-                        |> Map.split([:amount, :condition])
+  def check_max_thresholds(price) do
+    cached_max()
+    |> Enum.filter(fn {_user_id, %{amount: amount, condition: condition}} ->
+      price_meets_max_threshold_condition(price, amount, condition)
+    end)
+    |> Enum.map(&Kernel.elem(&1, 0))
+    |> unmet_max_thresholds_exceeded(price)
+    |> set_thresholds_to_met
+  end
 
-    if price_meets_max_threshold_condition(price, threshold_amount, condition) do
-      unmet_max_thresholds_exceeded(price)
-      |> Coyneye.Repo.update_all(
-        set: [
-          met: true
-        ]
-      )
-      |> elem(0)
-    else
-      0
-    end
+  def check_min_thresholds(price) do
+    cached_min()
+    |> Enum.filter(fn {_user_id, %{amount: amount, condition: condition}} ->
+      price_meets_min_threshold_condition(price, amount, condition)
+    end)
+    |> Enum.map(&Kernel.elem(&1, 0))
+    |> unmet_min_thresholds_exceeded(price)
+    |> set_thresholds_to_met
+  end
+
+  # do i need to pass user_ids here?
+  # can this be implemented with tap? i want part of the return value from the
+  # previous function and just to pass the user_ids on
+  def set_thresholds_to_met({_thresholds_query, []}), do: []
+  def set_thresholds_to_met({thresholds_query, user_ids}) do
+    thresholds_query
+    |> Repo.update_all(
+      set: [
+        met: true
+      ]
+    )
+
+    user_ids
   end
 
   def notified(:max_threshold) do
@@ -226,24 +239,6 @@ defmodule Coyneye.Threshold do
     price > threshold_amount
   end
 
-  def check_min_threshold(_price, nil), do: 0
-  def check_min_threshold(price, min_threshold) do
-    {%{amount: threshold_amount, condition: condition}, _} = min_threshold
-                        |> Map.split([:amount, :condition])
-
-    if price_meets_min_threshold_condition(price, threshold_amount, condition) do
-      unmet_min_thresholds_exceeded(price)
-      |> Coyneye.Repo.update_all(
-        set: [
-          met: true
-        ]
-      )
-      |> elem(0)
-    else
-      0
-    end
-  end
-
   defp price_meets_min_threshold_condition(price, threshold_amount, :met) do
     price <= threshold_amount
   end
@@ -259,12 +254,18 @@ defmodule Coyneye.Threshold do
     Query.from(MinThreshold, where: [met: false])
   end
 
-  def unmet_max_thresholds_exceeded(price) do
-    Query.from(mt in unmet_max_thresholds(), where: mt.amount <= ^price)
+  def unmet_max_thresholds_exceeded(user_ids, price) do
+    {
+      Query.from(mt in unmet_max_thresholds(), where: mt.amount <= ^price and mt.user_id in ^user_ids),
+      user_ids
+    }
   end
 
-  def unmet_min_thresholds_exceeded(price) do
-    Query.from(mt in unmet_min_thresholds(), where: mt.amount >= ^price)
+  def unmet_min_thresholds_exceeded(user_ids, price) do
+    {
+      Query.from(mt in unmet_min_thresholds(), where: mt.amount >= ^price and mt.user_id in ^user_ids),
+      user_ids
+    }
   end
 
   defp threshold(nil), do: nil
@@ -276,6 +277,9 @@ defmodule Coyneye.Threshold do
     threshold_values
   end
 
+  # Currently caches all users' thresholds when any threshold needs to be
+  # updated. This could be more efficient but would have to queue changes to
+  # avoid missing data when two thresholds are updated at the same time.
   defp update_cache(:max_threshold) do
     DatabaseCache.put(:minimum_unmet_maximum_threshold, minimum_unmet_maximums())
     Coyneye.MaxThreshold.notify_subscribers({:ok, cached_max()})

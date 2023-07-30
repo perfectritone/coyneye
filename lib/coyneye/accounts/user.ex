@@ -7,6 +7,8 @@ defmodule Coyneye.Accounts.User do
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
+    field :pushover_user, :string
+    field :pushover_token, :string, redact: true
 
     timestamps()
   end
@@ -36,9 +38,10 @@ defmodule Coyneye.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email, :password, :pushover_user, :pushover_token])
     |> validate_email(opts)
     |> validate_password(opts)
+    |> validate_pushover_authentication
   end
 
   defp validate_email(changeset, opts) do
@@ -58,6 +61,20 @@ defmodule Coyneye.Accounts.User do
     # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
     # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
     |> maybe_hash_password(opts)
+  end
+
+  def validate_pushover_authentication(changeset) do
+    changeset
+    |> validate_required([:pushover_user, :pushover_token])
+    |> valid_with_pushover?
+  end
+
+  def valid_with_pushover?(changeset) do
+    if true do # actually hit pushover
+      changeset
+    else
+      add_error(changeset, :pushover_user, "is not valid")
+    end
   end
 
   defp maybe_hash_password(changeset, opts) do
@@ -119,6 +136,12 @@ defmodule Coyneye.Accounts.User do
     |> cast(attrs, [:password])
     |> validate_confirmation(:password, message: "does not match password")
     |> validate_password(opts)
+  end
+
+  def pushover_authentication_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:pushover_user, :pushover_token])
+    |> validate_pushover_authentication
   end
 
   @doc """

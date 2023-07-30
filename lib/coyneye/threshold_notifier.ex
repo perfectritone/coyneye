@@ -1,42 +1,45 @@
 defmodule Coyneye.ThresholdNotifier do
-  alias Coyneye.{Currency, PriceFormatter, PushoverService, Threshold}
+  alias Coyneye.{Currency, Accounts, PriceFormatter, PushoverService, Threshold}
 
   @moduledoc """
   Send threshold notifications to the Pushover Service
   """
 
   def call(price) do
-    Threshold.check_thresholds(price)
-    |> handle_pushover_notifications(price)
-    |> broadcast_threshold_update
-    |> set_threshold_success
+    results = Threshold.check_thresholds(price)
+
+    results[:users_with_max_threshold_conditions_met]
+    |> Enum.map(fn u -> tap(u, &handle_pushover_notifications(&1, :max, price)) end)
+    |> Enum.map(&broadcast_threshold_update(&1, :max))
+
+    set_threshold_success(:max)
+
+    results[:users_with_min_threshold_conditions_met]
+    |> Enum.map(fn u -> tap(u, &handle_pushover_notifications(&1, :min, price)) end)
+    |> Enum.map(&broadcast_threshold_update(&1, :min))
+
+    set_threshold_success(:min)
   end
 
-  def handle_pushover_notifications(%{} = thresholds_met, price) do
-    threshold_direction(thresholds_met)
-    |> send_threshold_notifications(price)
-
-    thresholds_met
+  def handle_pushover_notifications(user_id, direction, price) do
+    Accounts.get_user_pushover_authentication!(user_id)
+    |> send_threshold_notifications(threshold_direction(direction), price)
   end
 
-  defp send_threshold_notifications(nil, _price), do: {:ok}
-
-  defp send_threshold_notifications(threshold_direction, price) do
-    notification_message(threshold_direction, price)
-    |> PushoverService.notify()
+  defp send_threshold_notifications(%{} = pushover_auth, direction, price) do
+    notification_message(direction, price)
+    |> PushoverService.notify(pushover_auth)
   end
 
-  defp threshold_direction(%{max_threshold_met: true}), do: "above"
-
-  defp threshold_direction(%{min_threshold_met: true}), do: "below"
-
-  defp threshold_direction(%{}), do: nil
+  defp threshold_direction(:max), do: "above"
+  defp threshold_direction(:min), do: "below"
 
   defp notification_message(direction, price) do
     "USD/ETH is #{direction} threshold (#{price})"
   end
 
-  defp broadcast_threshold_update(%{max_threshold_met: true}) do
+  # broadcast based on user_id?
+  defp broadcast_threshold_update(_user_id, :max) do
     currency_pair = Currency.default_pair()
 
     CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}", "max_threshold_met",
@@ -48,7 +51,7 @@ defmodule Coyneye.ThresholdNotifier do
     %{max_threshold_met: true}
   end
 
-  defp broadcast_threshold_update(%{min_threshold_met: true}) do
+  defp broadcast_threshold_update(_user_id, :min) do
     currency_pair = Currency.default_pair()
 
     CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}", "min_threshold_met",
@@ -60,15 +63,14 @@ defmodule Coyneye.ThresholdNotifier do
     %{min_threshold_met: true}
   end
 
-  defp broadcast_threshold_update(%{}), do: %{}
-
-  defp set_threshold_success(%{max_threshold_met: true}) do
+  # This should also be queued and done after each successful notification, not
+  # after all notifications have succeeded
+  defp set_threshold_success(:max) do
     Threshold.notified(:max_threshold)
   end
-  defp set_threshold_success(%{min_threshold_met: true}) do
+  defp set_threshold_success(:min) do
     Threshold.notified(:min_threshold)
   end
-  defp set_threshold_success(%{}), do: nil
 
   defp formatted_threshold(threshold_amount), do: PriceFormatter.call(threshold_amount)
 end

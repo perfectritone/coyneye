@@ -17,7 +17,7 @@
         field={f[:current_password]}
         name="current_password"
         type="password"
-        label="Current Password"
+        label="Current password"
         required
         id="current_password_for_email"
       />
@@ -57,6 +57,35 @@
       />
       <:actions>
         <.button phx-disable-with="Changing...">Change Password</.button>
+      </:actions>
+    </.simple_form>
+  </div>
+  <div>
+    <.simple_form
+      :let={f}
+      for={@pushover_authentication_changeset}
+      action={~p"/users/settings"}
+      id="update_pushover_authentication"
+    >
+      <.error :if={@pushover_authentication_changeset.action}>
+        Oops, something went wrong! Please check the errors below.
+      </.error>
+
+      <.input field={f[:action]} type="hidden" name="action" value="update_pushover_authentication" />
+
+      <.input field={f[:pushover_user]} type="text" label="Pushover User" required />
+      <.input field={f[:pushover_token]} type="password" label="Pushover Token" required />
+
+      <.input
+        field={f[:current_password]}
+        name="current_password"
+        type="password"
+        label="Current password"
+        id="current_password_for_password"
+        required
+      />
+      <:actions>
+        <.button phx-disable-with="Changing...">Change Pushover Authentication</.button>
       </:actions>
     </.simple_form>
   </div>

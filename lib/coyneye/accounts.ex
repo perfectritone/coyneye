@@ -60,6 +60,11 @@ defmodule Coyneye.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_user_pushover_authentication!(id) do
+    get_user!(id)
+    |> Map.take([:pushover_user, :pushover_token])
+  end
+
   ## User registration
 
   @doc """
@@ -213,6 +218,39 @@ defmodule Coyneye.Accounts do
       {:ok, %{user: user}} -> {:ok, user}
       {:error, :user, changeset, _} -> {:error, changeset}
     end
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user pushover authentication.
+
+  ## Examples
+
+      iex> change_user_pushover_auth(user)
+      %Ecto.Changeset{data: %User{}}
+
+  """
+
+  def change_user_pushover_authentication(user, attrs \\ %{}) do
+    User.pushover_authentication_changeset(user, attrs)
+  end
+
+  @doc """
+  Updates the user pushover authentication.
+
+  ## Examples
+
+      iex> update_user_pushover_authentication(user, "current password", %{pushover_user: "user", pushover_token: "token"})
+      {:ok, %User{}}
+
+      iex> update_user_pushover_authentication(user, "current_password", %{pushover_user: "user", pushover_token: "invalid token"})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_user_pushover_authentication(user, password, attrs) do
+    user
+    |> User.pushover_authentication_changeset(attrs)
+    |> User.validate_current_password(password)
+    |> Repo.update
   end
 
   ## Session
