@@ -1,5 +1,6 @@
 defmodule Coyneye.ThresholdNotifier do
-  alias Coyneye.{Currency, Accounts, PriceFormatter, PushoverService, Threshold}
+  alias EnumExt
+  alias Coyneye.{Accounts, Currency, PriceFormatter, PushoverService, Threshold}
 
   @moduledoc """
   Send threshold notifications to the Pushover Service
@@ -11,14 +12,14 @@ defmodule Coyneye.ThresholdNotifier do
     results[:users_with_max_threshold_conditions_met]
     |> Enum.map(fn u -> tap(u, &handle_pushover_notifications(&1, :max, price)) end)
     |> Enum.map(&broadcast_threshold_update(&1, :max))
-
-    set_threshold_success(:max)
+    |> EnumExt.present?
+    |> set_threshold_success(:max)
 
     results[:users_with_min_threshold_conditions_met]
     |> Enum.map(fn u -> tap(u, &handle_pushover_notifications(&1, :min, price)) end)
     |> Enum.map(&broadcast_threshold_update(&1, :min))
-
-    set_threshold_success(:min)
+    |> EnumExt.present?
+    |> set_threshold_success(:min)
   end
 
   def handle_pushover_notifications(user_id, direction, price) do
@@ -63,12 +64,14 @@ defmodule Coyneye.ThresholdNotifier do
     %{min_threshold_met: true}
   end
 
+  # IMPROVEMENT:
   # This should also be queued and done after each successful notification, not
   # after all notifications have succeeded
-  defp set_threshold_success(:max) do
+  defp set_threshold_success(false, _), do: nil
+  defp set_threshold_success(true, :max) do
     Threshold.notified(:max_threshold)
   end
-  defp set_threshold_success(:min) do
+  defp set_threshold_success(true, :min) do
     Threshold.notified(:min_threshold)
   end
 
