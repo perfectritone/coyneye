@@ -13,7 +13,7 @@ defmodule CoyneyeWeb.Endpoint do
 
   socket "/live", Phoenix.LiveView.Socket, websocket: [connect_info: [session: @session_options]]
 
-  socket "/socket", CoyneyeWeb.PriceSocket,
+  socket "/price_socket", CoyneyeWeb.PriceSocket,
     websocket: [timeout: 45_000],
     longpoll: false
 
