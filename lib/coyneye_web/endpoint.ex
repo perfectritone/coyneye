@@ -17,6 +17,10 @@ defmodule CoyneyeWeb.Endpoint do
     websocket: [timeout: 45_000],
     longpoll: false
 
+  socket "/threshold_socket", CoyneyeWeb.ThresholdSocket,
+    websocket: [timeout: 45_000],
+    longpoll: false
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest
