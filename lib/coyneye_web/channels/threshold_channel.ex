@@ -6,7 +6,11 @@ defmodule CoyneyeWeb.ThresholdChannel do
   """
 
   @impl true
-  def join("threshold:eth_usd", _payload, socket) do
-    {:ok, socket}
+  def join("threshold:eth_usd:" <> user_id, _payload, socket) do
+    if String.to_integer(user_id) == socket.assigns.user do
+      {:ok, socket}
+    else
+      {:error, socket}
+    end
   end
 end

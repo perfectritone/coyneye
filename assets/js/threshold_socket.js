@@ -2,6 +2,7 @@ import {Socket} from "phoenix"
 
 // And connect to the path in "lib/coyneye_web/endpoint.ex". We pass the
 // token for authentication. Read below how it should be used.
+let userId = window.userId
 let thresholdSocket = new Socket("/threshold_socket", {params: {token: window.userToken}})
 
 // When you connect, you'll often need to authenticate the client.
@@ -50,18 +51,18 @@ let thresholdSocket = new Socket("/threshold_socket", {params: {token: window.us
 
 thresholdSocket.connect()
 
-let thresholdChannel = thresholdSocket.channel("threshold:eth_usd", {})
+let thresholdChannel = thresholdSocket.channel(`threshold:eth_usd:${userId}`, {})
 let maxThresholdContainer = document.querySelector("#max-threshold-amount")
 let minThresholdContainer = document.querySelector("#min-threshold-amount")
 
 thresholdChannel.on("max_threshold_met", payload => {
-  let new_threshold = payload.new_max_threshold || ''
-  maxThresholdContainer.innerText = `(${new_threshold})`
+  let newThreshold = payload.new_max_threshold || ''
+  maxThresholdContainer.innerText = `(${newThreshold})`
 })
 
 thresholdChannel.on("min_threshold_met", payload => {
-  let new_threshold = payload.new_min_threshold || ''
-  minThresholdContainer.innerText = `(${new_threshold})`
+  let newThreshold = payload.new_min_threshold || ''
+  minThresholdContainer.innerText = `(${newThreshold})`
 })
 
 thresholdChannel.join()

@@ -39,25 +39,24 @@ defmodule Coyneye.ThresholdNotifier do
     "USD/ETH is #{direction} threshold (#{price})"
   end
 
-  # broadcast based on user_id?
-  defp broadcast_threshold_update(_user_id, :max) do
+  defp broadcast_threshold_update(user_id, :max) do
     currency_pair = Currency.default_pair()
 
-    CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}", "max_threshold_met",
+    CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}:#{user_id}", "max_threshold_met",
       %{
-        new_max_threshold: formatted_threshold(Threshold.cached_max_amount),
+        new_max_threshold: formatted_threshold(Threshold.cached_max_amount_for_user(user_id)),
         currency_pair: currency_pair
       })
 
     %{max_threshold_met: true}
   end
 
-  defp broadcast_threshold_update(_user_id, :min) do
+  defp broadcast_threshold_update(user_id, :min) do
     currency_pair = Currency.default_pair()
 
-    CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}", "min_threshold_met",
+    CoyneyeWeb.Endpoint.broadcast!("threshold:#{currency_pair}:#{user_id}", "min_threshold_met",
       %{
-        new_min_threshold: formatted_threshold(Threshold.cached_min_amount),
+        new_min_threshold: formatted_threshold(Threshold.cached_min_amount_for_user(user_id)),
         currency_pair: currency_pair
       })
 
