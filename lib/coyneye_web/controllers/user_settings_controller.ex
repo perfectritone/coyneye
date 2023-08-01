@@ -27,7 +27,7 @@ defmodule CoyneyeWeb.UserSettingsController do
           :info,
           "A link to confirm your email change has been sent to the new address."
         )
-        |> redirect(to: ~p"/users/settings")
+        |> redirect(to: ~p"/prices")
 
       {:error, changeset} ->
         render(conn, :edit, email_changeset: changeset)
@@ -42,7 +42,7 @@ defmodule CoyneyeWeb.UserSettingsController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Password updated successfully.")
-        |> put_session(:user_return_to, ~p"/users/settings")
+        |> put_session(:user_return_to, ~p"/prices")
         |> UserAuth.log_in_user(user)
 
       {:error, changeset} ->
@@ -58,7 +58,7 @@ defmodule CoyneyeWeb.UserSettingsController do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "Pushover authentication updated successfully.")
-        |> redirect(to: ~p"/users/settings")
+        |> redirect(to: ~p"/prices")
 
       {:error, changeset} ->
         render(conn, :edit, pushover_authentication_changeset: changeset)
