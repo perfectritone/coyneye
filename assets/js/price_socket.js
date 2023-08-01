@@ -52,30 +52,6 @@ let socket = new Socket("/price_socket", {params: {token: window.userToken}})
 //
 // Finally, connect to the socket:
 
-// Reload the page when it comes back into visibility.
-//
-// On mobile, websockets timeout after 60 seconds in firefox when the tab is
-// not in focus. This leads to the socket almost always being closed when
-// returning to the tab, with stale data. Phoenix attempts to remedy this
-// by listening to the 'pageshow' and 'pagehide' events and reconnecting to
-// the socket, but these events only really work properly on desktop browsers,
-// not mobile.
-//
-// Regardless, even with a reconnect, the data would still be stale since all
-// updates after disconnection will have been missed. A more complicated
-// approach would involve checking the socket connection, reconnecting if
-// necessary and requesting the relevant data. This is cleaner, but with
-// the current complexity of this page, a reload is cheaper and much easier.
-const phxWindow = typeof window !== "undefined" ? window : null
-
-if(phxWindow && phxWindow.addEventListener){
-  phxWindow.addEventListener("visibilitychange", _event => {
-    if(phxWindow.document.visibilityState == 'visible') {
-      location.reload()
-    }
-  })
-}
-
 socket.connect()
 
 // Now that you are connected, you can join channels with a topic.
