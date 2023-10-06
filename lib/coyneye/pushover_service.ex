@@ -5,19 +5,44 @@ defmodule Coyneye.PushoverService do
   Push notifications to the Pushover service
   """
 
-  @url "https://api.pushover.net/1/messages.json"
+  @message_url "https://api.pushover.net/1/messages.json"
+  @user_validation_url "https://api.pushover.net/1/users/validate.json"
   @headers [{"Content-Type", "application/json"}]
 
   def notify(message, %{pushover_user: pushover_user}) do
-    HTTPoison.post(@url, body(message, pushover_user, application_token()), @headers)
+    HTTPoison.post(
+      @message_url,
+      message_body(message, pushover_user),
+      @headers)
   end
 
-  def body(message, pushover_user, application_token) do
+  defp message_body(message, pushover_user) do
     Poison.encode!(%{
-      token: application_token,
+      token: application_token(),
       user: pushover_user,
       message: message,
       sound: sound(message)
+    })
+  end
+
+  def validate_user(pushover_user) do
+    HTTPoison.post!(
+      @user_validation_url,
+      validate_body(pushover_user),
+      @headers)
+    |> Map.fetch!(:body)
+    |> Poison.decode!
+    |> Map.fetch!("status")
+    |> case do
+      1 -> true
+      0 -> false
+    end
+  end
+
+  defp validate_body(pushover_user) do
+    Poison.encode!(%{
+      token: application_token(),
+      user: pushover_user
     })
   end
 

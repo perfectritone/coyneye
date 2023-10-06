@@ -69,7 +69,7 @@ defmodule Coyneye.Accounts.User do
   end
 
   def valid_with_pushover?(changeset) do
-    if true do # actually hit pushover
+    if Coyneye.PushoverService.validate_user(changeset.params["pushover_user"]) do
       changeset
     else
       add_error(changeset, :pushover_user, "is not valid")
