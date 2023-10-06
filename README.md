@@ -4,6 +4,8 @@ Coyneye gives users the ability to track live cryptocurrency prices.
 By setting and maintaining custom thresholds, users will receive notifications
 to their mobile devices via the Pushover app.
 
+The app is available [`here`](https://coyneye.herokuapp.com)
+
 ## Development
 
 To start your Phoenix server:
