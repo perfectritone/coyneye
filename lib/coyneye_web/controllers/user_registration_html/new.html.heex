@@ -10,6 +10,14 @@
     </:subtitle>
   </.header>
 
+  <p>
+    Accounts currently require the
+    <.link navigate="https://pushover.net">
+    Pushover
+    </.link>
+    app to receive threshold notifications.
+  </p>
+
   <.simple_form :let={f} for={@changeset} action={~p"/users/register"}>
     <.error :if={@changeset.action == :insert}>
       Oops, something went wrong! Please check the errors below.
@@ -17,7 +25,7 @@
 
     <.input field={f[:email]} type="email" label="Email" required />
     <.input field={f[:password]} type="password" label="Password" required />
-    <.input field={f[:pushover_user]} type="text" label="Pushover User" required />
+    <.input field={f[:pushover_user]} type="text" label="Pushover User Key" required />
 
     <:actions>
       <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
