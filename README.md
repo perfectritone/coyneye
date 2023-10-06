@@ -1,5 +1,11 @@
 # Coyneye
 
+Coyneye gives users the ability to track live cryptocurrency prices.
+By setting and maintaining custom thresholds, users will receive notifications
+to their mobile devices via the Pushover app.
+
+## Development
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
@@ -22,5 +28,5 @@ To setup the production database on heroku:
 ### Seeding
 MIX_ENV="test" mix run priv/repo/seeds.exs
 
-### Run test
+### Run tests
 mix test
