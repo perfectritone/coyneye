@@ -109,6 +109,16 @@ defmodule CoyneyeWeb.UserAuth do
   end
 
   @doc """
+  Assigns the user id if the user is authenticated
+  """
+  def fetch_current_user_id(conn, _opts) do
+    assign(conn, :current_user_id, current_user_id(conn.assigns.current_user))
+  end
+
+  defp current_user_id(nil), do: nil
+  defp current_user_id(user), do: user.id
+
+  @doc """
   Handles mounting and authenticating the current_user in LiveViews.
 
   ## `on_mount` arguments
