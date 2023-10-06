@@ -8,6 +8,7 @@ defmodule CoyneyeWeb.MaxThresholdController do
 
     success_redirect(conn)
   end
+
   def create(conn, %{"exceeded" => _, "max_threshold" => %{"amount" => amounts}}) do
     ThresholdParser.parse_amounts(amounts)
     |> ThresholdCreator.create(conn.assigns.current_user, condition: :exceeded, direction: :max)

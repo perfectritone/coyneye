@@ -1,5 +1,6 @@
 defmodule Coyneye.MinThreshold do
   alias Coyneye.PubSub
+
   @moduledoc """
   Min Threshold subscriber class
   """

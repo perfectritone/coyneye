@@ -13,7 +13,8 @@ defmodule Coyneye.PushoverService do
     HTTPoison.post(
       @message_url,
       message_body(message, pushover_user),
-      @headers)
+      @headers
+    )
   end
 
   defp message_body(message, pushover_user) do
@@ -29,9 +30,10 @@ defmodule Coyneye.PushoverService do
     HTTPoison.post!(
       @user_validation_url,
       validate_body(pushover_user),
-      @headers)
+      @headers
+    )
     |> Map.fetch!(:body)
-    |> Poison.decode!
+    |> Poison.decode!()
     |> Map.fetch!("status")
     |> case do
       1 -> true

@@ -3,9 +3,10 @@ defmodule Coyneye.ThresholdTest do
   use Coyneye.DataCase
 
   setup do
-    {:ok, _currency} = %Coyneye.Model.Currency{}
-      |> Coyneye.Model.Currency.changeset(%{name: Coyneye.Application.eth_usd_currency_pair})
-      |> Coyneye.Repo.insert
+    {:ok, _currency} =
+      %Coyneye.Model.Currency{}
+      |> Coyneye.Model.Currency.changeset(%{name: Coyneye.Application.eth_usd_currency_pair()})
+      |> Coyneye.Repo.insert()
 
     :ok
   end

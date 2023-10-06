@@ -85,6 +85,9 @@ defmodule CoyneyeWeb.UserSettingsController do
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:password_changeset, Accounts.change_user_password(user))
-    |> assign(:pushover_authentication_changeset, Accounts.change_user_pushover_authentication(user))
+    |> assign(
+      :pushover_authentication_changeset,
+      Accounts.change_user_pushover_authentication(user)
+    )
   end
 end

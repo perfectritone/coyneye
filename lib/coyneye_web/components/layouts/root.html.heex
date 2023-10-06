@@ -10,13 +10,17 @@
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
-    <script>window.userId = "<%= @current_user_id %>";</script>
-    <script>window.userToken = "<%= assigns[:user_token] %>";</script>
+    <script>
+      window.userId = "<%= @current_user_id %>";
+    </script>
+    <script>
+      window.userToken = "<%= assigns[:user_token] %>";
+    </script>
   </head>
   <body class="bg-white antialiased">
-    <div id='menu'>
-      <img src={ ~p"/images/icons8-menu.svg" } />
-      <div id='menu-dropdown' hidden>
+    <div id="menu">
+      <img src={~p"/images/icons8-menu.svg"} />
+      <div id="menu-dropdown" hidden>
         <ul>
           <%= if @current_user do %>
             <li class="text-[0.8125rem] text-zinc-900">
@@ -49,16 +53,12 @@
             </li>
           <% else %>
             <li>
-              <.link
-                href={~p"/users/register"}
-              >
+              <.link href={~p"/users/register"}>
                 Register
               </.link>
             </li>
             <li>
-              <.link
-                href={~p"/users/log_in"}
-              >
+              <.link href={~p"/users/log_in"}>
                 Log in
               </.link>
             </li>

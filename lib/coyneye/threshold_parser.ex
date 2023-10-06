@@ -22,20 +22,28 @@ defmodule Coyneye.ThresholdParser do
     end
   end
 
-  defp parse_multiplier(%{"base" => base, "operand" => operand, "multiplicand" => multiplicand, "multiplier" => multiplier}) do
-    multiplier = case Integer.parse(multiplier) do
-      {multiplier, _} -> multiplier
-      :error -> 1
-    end
+  defp parse_multiplier(%{
+         "base" => base,
+         "operand" => operand,
+         "multiplicand" => multiplicand,
+         "multiplier" => multiplier
+       }) do
+    multiplier =
+      case Integer.parse(multiplier) do
+        {multiplier, _} -> multiplier
+        :error -> 1
+      end
 
     {base, _} = Float.parse(base)
     {multiplicand, _} = Float.parse(multiplicand)
-    operand_function = case operand do
-      "+" -> &sum/2
-      "-" -> &difference/2
-    end
 
-    Enum.map(Enum.to_list(0..multiplier), fn(x) -> operand_function.(base, x * multiplicand) end)
+    operand_function =
+      case operand do
+        "+" -> &sum/2
+        "-" -> &difference/2
+      end
+
+    Enum.map(Enum.to_list(0..multiplier), fn x -> operand_function.(base, x * multiplicand) end)
   end
 
   defp cast_threshold(amount) do

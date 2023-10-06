@@ -37,8 +37,10 @@ defmodule Coyneye.Price do
   def notify_channel_subscribers({:ok, amount}) do
     currency_pair = Currency.default_pair()
 
-    CoyneyeWeb.Endpoint.broadcast!("price:#{currency_pair}", "new_price",
-      %{formatted_price: formatted_price(amount, currency_pair), currency_pair: currency_pair})
+    CoyneyeWeb.Endpoint.broadcast!("price:#{currency_pair}", "new_price", %{
+      formatted_price: formatted_price(amount, currency_pair),
+      currency_pair: currency_pair
+    })
   end
 
   defp last_query do
@@ -47,6 +49,6 @@ defmodule Coyneye.Price do
 
   defp formatted_currency_pair(currency_pair) do
     String.split(currency_pair, "_")
-      |> Enum.map_join("/", &String.upcase/1)
+    |> Enum.map_join("/", &String.upcase/1)
   end
 end

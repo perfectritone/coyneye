@@ -48,7 +48,7 @@ defmodule CoyneyeWeb.ThresholdController do
       expect(PriceMock, :last_amount, fn -> 302 end)
 
       interval_amount = 10.0
-      interval_amount_as_string = :erlang.float_to_binary(interval_amount, [decimals: 0])
+      interval_amount_as_string = :erlang.float_to_binary(interval_amount, decimals: 0)
       attrs = %{amount: interval_amount_as_string}
       conn = post(conn, ~p"/max_thresholds/interval", attrs)
 
@@ -61,6 +61,7 @@ defmodule CoyneyeWeb.ThresholdController do
   end
 
   defp build_attrs(), do: build_attrs(%{amount: @threshold_1})
+
   defp build_attrs(%{amount: amount}) do
     %{met: "true", max_threshold: %{amount: amount}}
   end

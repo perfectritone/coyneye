@@ -20,19 +20,23 @@ defmodule CoyneyeWeb.PriceController do
 
   defp assigns(current_user) do
     %{
-      formatted_last_price: Price.formatted_last_price(),
-    } |> Map.merge(threshold_assigns(current_user))
+      formatted_last_price: Price.formatted_last_price()
+    }
+    |> Map.merge(threshold_assigns(current_user))
   end
 
   defp threshold_assigns(%Coyneye.Accounts.User{} = current_user) do
     user_id = current_user.id
 
     %{
-      formatted_last_min_threshold_amount: PriceFormatter.call(Threshold.cached_min_amount_for_user(user_id)),
-      formatted_last_max_threshold_amount: PriceFormatter.call(Threshold.cached_max_amount_for_user(user_id)),
+      formatted_last_min_threshold_amount:
+        PriceFormatter.call(Threshold.cached_min_amount_for_user(user_id)),
+      formatted_last_max_threshold_amount:
+        PriceFormatter.call(Threshold.cached_max_amount_for_user(user_id)),
       min_threshold_changeset: min_threshold_changeset(),
       max_threshold_changeset: max_threshold_changeset()
     }
   end
+
   defp threshold_assigns(nil), do: %{}
 end

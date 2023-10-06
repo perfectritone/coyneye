@@ -21,6 +21,8 @@ defmodule Coyneye.Model.MaxThreshold do
     max_threshold
     |> cast(attrs, [:amount, :met, :condition, :currency_id, :user_id])
     |> validate_required([:amount, :met, :condition, :currency_id, :user_id])
-    |> unique_constraint(:user_max_threshold_for_currency, name: :max_thresholds_user_id_currency_id_amount_index)
+    |> unique_constraint(:user_max_threshold_for_currency,
+      name: :max_thresholds_user_id_currency_id_amount_index
+    )
   end
 end

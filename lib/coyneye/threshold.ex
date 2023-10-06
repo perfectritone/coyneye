@@ -16,29 +16,32 @@ defmodule Coyneye.Threshold do
   end
 
   def minimum_unmet_maximums do
-    user_minimum_maximum_thresholds = Query.from(
-      ummt in MaxThreshold,
-      where: [met: false],
-      group_by: :user_id,
-      select: %{
-        user_id: ummt.user_id,
-        min_user_amount: min(ummt.amount)
-      }
-    )
+    user_minimum_maximum_thresholds =
+      Query.from(
+        ummt in MaxThreshold,
+        where: [met: false],
+        group_by: :user_id,
+        select: %{
+          user_id: ummt.user_id,
+          min_user_amount: min(ummt.amount)
+        }
+      )
 
-    Repo.all(Query.from(
-      mt in MaxThreshold,
-      join: ummt in subquery(user_minimum_maximum_thresholds),
-      on: [
-        user_id: mt.user_id,
-        min_user_amount: mt.amount
-      ],
-      select: [
-        mt.user_id,
-        mt.amount,
-        mt.condition
-      ]
-    ))
+    Repo.all(
+      Query.from(
+        mt in MaxThreshold,
+        join: ummt in subquery(user_minimum_maximum_thresholds),
+        on: [
+          user_id: mt.user_id,
+          min_user_amount: mt.amount
+        ],
+        select: [
+          mt.user_id,
+          mt.amount,
+          mt.condition
+        ]
+      )
+    )
     |> user_closest_threshold_list_to_map
   end
 
@@ -49,29 +52,32 @@ defmodule Coyneye.Threshold do
   end
 
   def maximum_unmet_minimums do
-    user_maximum_minimum_thresholds = Query.from(
-      ummt in MinThreshold,
-      where: [met: false],
-      group_by: :user_id,
-      select: %{
-        user_id: ummt.user_id,
-        max_user_amount: max(ummt.amount)
-      }
-    )
+    user_maximum_minimum_thresholds =
+      Query.from(
+        ummt in MinThreshold,
+        where: [met: false],
+        group_by: :user_id,
+        select: %{
+          user_id: ummt.user_id,
+          max_user_amount: max(ummt.amount)
+        }
+      )
 
-    Repo.all(Query.from(
-      mt in MinThreshold,
-      join: ummt in subquery(user_maximum_minimum_thresholds),
-      on: [
-        user_id: mt.user_id,
-        max_user_amount: mt.amount
-      ],
-      select: [
-        mt.user_id,
-        mt.amount,
-        mt.condition
-      ]
-    ))
+    Repo.all(
+      Query.from(
+        mt in MinThreshold,
+        join: ummt in subquery(user_maximum_minimum_thresholds),
+        on: [
+          user_id: mt.user_id,
+          max_user_amount: mt.amount
+        ],
+        select: [
+          mt.user_id,
+          mt.amount,
+          mt.condition
+        ]
+      )
+    )
     |> user_closest_threshold_list_to_map
   end
 
@@ -81,13 +87,11 @@ defmodule Coyneye.Threshold do
   end
 
   def minimum_unmet_maximum_amount do
-    minimum_unmet_maximum()
-    .amount
+    minimum_unmet_maximum().amount
   end
 
   def maximum_unmet_minimum_amount do
-    maximum_unmet_minimum()
-    .amount
+    maximum_unmet_minimum().amount
   end
 
   def new_max_threshold do
@@ -111,7 +115,9 @@ defmodule Coyneye.Threshold do
     |> insert_max_threshold_unless_exists(user, amount, condition)
   end
 
-  def insert_max_threshold_unless_exists(%MaxThreshold{} = _record, _user, _amount, _condition), do: nil
+  def insert_max_threshold_unless_exists(%MaxThreshold{} = _record, _user, _amount, _condition),
+    do: nil
+
   def insert_max_threshold_unless_exists(nil, user, amount, condition) do
     max_threshold =
       MaxThreshold.changeset(
@@ -121,7 +127,8 @@ defmodule Coyneye.Threshold do
           "condition" => condition,
           "currency_id" => Currency.default_record_id(),
           "user_id" => user.id
-        })
+        }
+      )
       |> Repo.insert!()
 
     update_cache(:max_threshold)
@@ -142,7 +149,9 @@ defmodule Coyneye.Threshold do
     |> insert_min_threshold_unless_exists(user, amount, condition)
   end
 
-  def insert_min_threshold_unless_exists(%MinThreshold{} = _record, _user, _amount, _condition), do: nil
+  def insert_min_threshold_unless_exists(%MinThreshold{} = _record, _user, _amount, _condition),
+    do: nil
+
   def insert_min_threshold_unless_exists(nil, user, amount, condition) do
     min_threshold =
       MinThreshold.changeset(
@@ -152,7 +161,8 @@ defmodule Coyneye.Threshold do
           "condition" => condition,
           "currency_id" => Currency.default_record_id(),
           "user_id" => user.id
-        })
+        }
+      )
       |> Repo.insert!()
 
     update_cache(:min_threshold)
@@ -212,6 +222,7 @@ defmodule Coyneye.Threshold do
   # can this be implemented with tap? i want part of the return value from the
   # previous function and just to pass the user_ids on
   def set_thresholds_to_met({_thresholds_query, []}), do: []
+
   def set_thresholds_to_met({thresholds_query, user_ids}) do
     thresholds_query
     |> Repo.update_all(
@@ -225,16 +236,18 @@ defmodule Coyneye.Threshold do
 
   def notified(:max_threshold) do
     Query.from(MaxThreshold, where: [met: true])
-    |> Repo.delete_all
+    |> Repo.delete_all()
   end
+
   def notified(:min_threshold) do
     Query.from(MinThreshold, where: [met: true])
-    |> Repo.delete_all
+    |> Repo.delete_all()
   end
 
   defp price_meets_max_threshold_condition(price, threshold_amount, :met) do
     price >= threshold_amount
   end
+
   defp price_meets_max_threshold_condition(price, threshold_amount, :exceeded) do
     price > threshold_amount
   end
@@ -242,6 +255,7 @@ defmodule Coyneye.Threshold do
   defp price_meets_min_threshold_condition(price, threshold_amount, :met) do
     price <= threshold_amount
   end
+
   defp price_meets_min_threshold_condition(price, threshold_amount, :exceeded) do
     price < threshold_amount
   end
@@ -256,14 +270,18 @@ defmodule Coyneye.Threshold do
 
   def unmet_max_thresholds_exceeded(user_ids, price) do
     {
-      Query.from(mt in unmet_max_thresholds(), where: mt.amount <= ^price and mt.user_id in ^user_ids),
+      Query.from(mt in unmet_max_thresholds(),
+        where: mt.amount <= ^price and mt.user_id in ^user_ids
+      ),
       user_ids
     }
   end
 
   def unmet_min_thresholds_exceeded(user_ids, price) do
     {
-      Query.from(mt in unmet_min_thresholds(), where: mt.amount >= ^price and mt.user_id in ^user_ids),
+      Query.from(mt in unmet_min_thresholds(),
+        where: mt.amount >= ^price and mt.user_id in ^user_ids
+      ),
       user_ids
     }
   end

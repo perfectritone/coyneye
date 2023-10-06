@@ -8,6 +8,7 @@ defmodule CoyneyeWeb.MinThresholdController do
 
     success_redirect(conn)
   end
+
   def create(conn, %{"exceeded" => _, "min_threshold" => %{"amount" => amounts}}) do
     ThresholdParser.parse_amounts(amounts)
     |> ThresholdCreator.create(conn.assigns.current_user, condition: :exceeded, direction: :min)

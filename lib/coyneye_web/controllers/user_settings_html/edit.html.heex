@@ -71,7 +71,12 @@
         Oops, something went wrong! Please check the errors below.
       </.error>
 
-      <.input field={f[:action]} type="hidden" name="action" value="update_pushover_authentication" />
+      <.input
+        field={f[:action]}
+        type="hidden"
+        name="action"
+        value="update_pushover_authentication"
+      />
 
       <.input field={f[:pushover_user]} type="text" label="Pushover User Key" required />
 

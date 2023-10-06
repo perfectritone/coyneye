@@ -250,7 +250,7 @@ defmodule Coyneye.Accounts do
     user
     |> User.pushover_authentication_changeset(attrs)
     |> User.validate_current_password(password)
-    |> Repo.update
+    |> Repo.update()
   end
 
   ## Session

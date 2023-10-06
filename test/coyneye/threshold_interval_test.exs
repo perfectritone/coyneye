@@ -20,10 +20,12 @@ defmodule Coyneye.ThresholdIntervalTest do
 
     thresholds = ThresholdInterval.amounts(direction: :min, interval: 10)
     expected_unordered_thresholds = [10, 20]
-    thresholds_match = for threshold <- thresholds, reduce: true do
-      acc ->
-        Enum.member?(expected_unordered_thresholds, threshold) and acc
-    end
+
+    thresholds_match =
+      for threshold <- thresholds, reduce: true do
+        acc ->
+          Enum.member?(expected_unordered_thresholds, threshold) and acc
+      end
 
     assert Enum.count(thresholds) == 2
     assert thresholds_match == true

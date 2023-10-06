@@ -8,7 +8,7 @@ defmodule Coyneye.Factory do
   # Factories
 
   def build(:currency) do
-    %Coyneye.Model.Currency{name: Coyneye.Application.eth_usd_currency_pair}
+    %Coyneye.Model.Currency{name: Coyneye.Application.eth_usd_currency_pair()}
   end
 
   def build(:price) do

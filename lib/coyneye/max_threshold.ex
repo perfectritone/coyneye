@@ -1,5 +1,6 @@
 defmodule Coyneye.MaxThreshold do
   alias Coyneye.PubSub
+
   @moduledoc """
   Max Threshold subscriber class
   """

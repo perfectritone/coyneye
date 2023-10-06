@@ -11,10 +11,11 @@
 # and so on) as they will fail if something goes wrong.
 #
 
-{:ok, currency} = %Coyneye.Model.Currency{}
-  |> Coyneye.Model.Currency.changeset(%{name: Coyneye.Application.eth_usd_currency_pair})
-  |> Coyneye.Repo.insert
+{:ok, currency} =
+  %Coyneye.Model.Currency{}
+  |> Coyneye.Model.Currency.changeset(%{name: Coyneye.Application.eth_usd_currency_pair()})
+  |> Coyneye.Repo.insert()
 
 %Coyneye.Model.Price{}
-  |> Coyneye.Model.Price.changeset(%{amount: 0, currency_id: currency.id})
-  |> Coyneye.Repo.insert
+|> Coyneye.Model.Price.changeset(%{amount: 0, currency_id: currency.id})
+|> Coyneye.Repo.insert()
