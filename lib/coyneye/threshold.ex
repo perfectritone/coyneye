@@ -270,13 +270,13 @@ defmodule Coyneye.Threshold do
 
   defp threshold(nil), do: nil
 
-  #defp threshold(query_result) when query_result in [%MaxThreshold{}, %MinThreshold{}] do
   defp threshold(query_result) do
     {threshold_values, _} = Map.split(query_result, [:amount, :condition, :user_id])
 
     threshold_values
   end
 
+  # IMPROVEMENT:
   # Currently caches all users' thresholds when any threshold needs to be
   # updated. This could be more efficient but would have to queue changes to
   # avoid missing data when two thresholds are updated at the same time.
