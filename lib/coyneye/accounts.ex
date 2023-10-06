@@ -62,7 +62,7 @@ defmodule Coyneye.Accounts do
 
   def get_user_pushover_authentication!(id) do
     get_user!(id)
-    |> Map.take([:pushover_user, :pushover_token])
+    |> Map.take([:pushover_user])
   end
 
   ## User registration
@@ -239,10 +239,10 @@ defmodule Coyneye.Accounts do
 
   ## Examples
 
-      iex> update_user_pushover_authentication(user, "current password", %{pushover_user: "user", pushover_token: "token"})
+      iex> update_user_pushover_authentication(user, "current password", %{pushover_user: "user"})
       {:ok, %User{}}
 
-      iex> update_user_pushover_authentication(user, "current_password", %{pushover_user: "user", pushover_token: "invalid token"})
+      iex> update_user_pushover_authentication(user, "current_password", %{pushover_user: "invalid user"})
       {:error, %Ecto.Changeset{}}
 
   """

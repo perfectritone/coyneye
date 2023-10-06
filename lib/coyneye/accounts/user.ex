@@ -8,7 +8,6 @@ defmodule Coyneye.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
     field :pushover_user, :string
-    field :pushover_token, :string, redact: true
 
     timestamps()
   end
@@ -38,7 +37,7 @@ defmodule Coyneye.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password, :pushover_user, :pushover_token])
+    |> cast(attrs, [:email, :password, :pushover_user])
     |> validate_email(opts)
     |> validate_password(opts)
     |> validate_pushover_authentication
@@ -65,7 +64,7 @@ defmodule Coyneye.Accounts.User do
 
   def validate_pushover_authentication(changeset) do
     changeset
-    |> validate_required([:pushover_user, :pushover_token])
+    |> validate_required([:pushover_user])
     |> valid_with_pushover?
   end
 
@@ -140,7 +139,7 @@ defmodule Coyneye.Accounts.User do
 
   def pushover_authentication_changeset(user, attrs) do
     user
-    |> cast(attrs, [:pushover_user, :pushover_token])
+    |> cast(attrs, [:pushover_user])
     |> validate_pushover_authentication
   end
 

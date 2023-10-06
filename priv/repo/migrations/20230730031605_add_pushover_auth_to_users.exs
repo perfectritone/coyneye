@@ -4,7 +4,6 @@ defmodule Coyneye.Repo.Migrations.AddPushoverAuthToUsers do
   def change do
     alter table("users") do
       add :pushover_user, :string, size: 32
-      add :pushover_token, :string, size: 32
     end
   end
 end
