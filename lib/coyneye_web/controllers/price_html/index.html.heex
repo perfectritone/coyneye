@@ -9,13 +9,28 @@
         <%= Phoenix.HTML.Form.text_input(f, :amount) %>
         <%= Phoenix.HTML.Form.submit("↑", name: "met") %>
         <%= Phoenix.HTML.Form.submit("↑↑", name: "exceeded") %>
+        <%= Phoenix.HTML.Link.button("5s",
+          to: "max_thresholds/interval?amount=5",
+          method: :post,
+          class: "btn"
+        ) %>
         <%= Phoenix.HTML.Link.button("10s",
           to: "max_thresholds/interval?amount=10",
           method: :post,
           class: "btn"
         ) %>
-        <%= Phoenix.HTML.Link.button("5s",
-          to: "max_thresholds/interval?amount=5",
+        <%= Phoenix.HTML.Link.button("20s",
+          to: "max_thresholds/interval?amount=20",
+          method: :post,
+          class: "btn"
+        ) %>
+        <%= Phoenix.HTML.Link.button("50s",
+          to: "max_thresholds/interval?amount=50",
+          method: :post,
+          class: "btn"
+        ) %>
+        <%= Phoenix.HTML.Link.button("100s",
+          to: "max_thresholds/interval?amount=100",
           method: :post,
           class: "btn"
         ) %>
@@ -30,13 +45,28 @@
         <%= Phoenix.HTML.Form.text_input(f, :amount) %>
         <%= Phoenix.HTML.Form.submit("↓", name: "met") %>
         <%= Phoenix.HTML.Form.submit("↓↓", name: "exceeded") %>
+        <%= Phoenix.HTML.Link.button("5s",
+          to: "min_thresholds/interval?amount=5",
+          method: :post,
+          class: "btn"
+        ) %>
         <%= Phoenix.HTML.Link.button("10s",
           to: "min_thresholds/interval?amount=10",
           method: :post,
           class: "btn"
         ) %>
-        <%= Phoenix.HTML.Link.button("5s",
-          to: "min_thresholds/interval?amount=5",
+        <%= Phoenix.HTML.Link.button("20s",
+          to: "min_thresholds/interval?amount=20",
+          method: :post,
+          class: "btn"
+        ) %>
+        <%= Phoenix.HTML.Link.button("50s",
+          to: "min_thresholds/interval?amount=50",
+          method: :post,
+          class: "btn"
+        ) %>
+        <%= Phoenix.HTML.Link.button("100s",
+          to: "min_thresholds/interval?amount=100",
           method: :post,
           class: "btn"
         ) %>
